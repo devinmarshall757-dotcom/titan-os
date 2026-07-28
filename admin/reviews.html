@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Admin | Titan Contracting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1a2744;
+      --navy-dark: #111c33;
+      --cream-light: #f7f5f2;
+      --white: #ffffff;
+      --text-dark: #1a1a2e;
+      --text-mid: #555;
+      --red: #c0392b;
+      --green: #27ae60;
+      --border: #e0ddd8;
+      --font-serif: "Plus Jakarta Sans", sans-serif;
+      --font-sans: "Inter", sans-serif;
+    }
+    body { font-family: var(--font-sans); background: var(--cream-light); color: var(--text-dark); min-height: 100vh; }
+
+    /* ── LOGIN ── */
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .login-card {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 40px; width: 100%; max-width: 380px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+    .login-card h1 { font-family: var(--font-serif); font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: var(--text-mid); margin-bottom: 24px; }
+    .login-card input {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-family: var(--font-sans); font-size: 14px;
+      outline: none; background: var(--cream-light); margin-bottom: 12px;
+    }
+    .login-card input:focus { border-color: var(--navy); background: white; }
+    .login-error { color: var(--red); font-size: 13px; margin-bottom: 12px; display: none; }
+
+    /* ── HEADER ── */
+    .admin-header {
+      background: var(--navy); color: white;
+      padding: 16px 32px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 100;
+    }
+    .admin-header h1 { font-family: var(--font-serif); font-size: 18px; font-weight: 800; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .tab-btn {
+      background: rgba(255,255,255,0.12); color: white;
+      border: 1px solid rgba(255,255,255,0.2); padding: 6px 16px;
+      border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
+      font-family: var(--font-sans); transition: background 0.2s;
+    }
+    .tab-btn.active { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+    .tab-btn:hover { background: rgba(255,255,255,0.2); }
+    .logout-btn {
+      background: transparent; color: rgba(255,255,255,0.6); border: none;
+      cursor: pointer; font-size: 13px; font-family: var(--font-sans);
+    }
+    .logout-btn:hover { color: white; }
+
+    /* ── MAIN ── */
+    .admin-main { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+    .section-title { font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 20px; }
+    .count-badge {
+      display: inline-block; background: var(--navy); color: white;
+      font-size: 12px; font-weight: 700; padding: 2px 9px;
+      border-radius: 10px; margin-left: 8px; vertical-align: middle;
+    }
+    .empty-state {
+      text-align: center; padding: 48px 24px; color: var(--text-mid); font-size: 14px;
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+    }
+    .demo-note {
+      background: #fffbea; border: 1px solid #f5e190; border-radius: 8px;
+      padding: 12px 16px; font-size: 13px; color: #7a6800; margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .demo-note strong { font-weight: 700; }
+
+    /* ── REVIEW CARD ── */
+    .review-card {
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+      padding: 24px; margin-bottom: 16px; display: flex; gap: 20px; align-items: flex-start;
+      transition: opacity 0.3s;
+    }
+    .review-photo { flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
+    .review-photo-placeholder {
+      flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px;
+      background: var(--cream-light); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #bbb;
+    }
+    .review-body { flex: 1; min-width: 0; }
+    .review-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+    .review-name { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .review-stars { color: #f5a623; font-size: 16px; letter-spacing: 1px; }
+    .review-service {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-mid); background: var(--cream-light); padding: 3px 8px; border-radius: 4px;
+    }
+    .review-text { font-size: 14px; color: var(--text-dark); line-height: 1.6; margin-bottom: 8px; }
+    .review-footer { font-size: 12px; color: #aaa; }
+    .review-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+    .action-btn {
+      padding: 8px 18px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: var(--font-sans); white-space: nowrap;
+    }
+    .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .approve-btn { background: var(--green); color: white; }
+    .approve-btn:hover:not(:disabled) { opacity: 0.88; }
+    .reject-btn { background: #f5f5f5; color: var(--red); border: 1px solid #fdd; }
+    .reject-btn:hover:not(:disabled) { background: #fff0f0; }
+    .approved-badge {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--green); background: #e8f5e9; padding: 4px 10px; border-radius: 4px;
+    }
+
+    .btn { padding: 10px 22px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); }
+    .btn-navy { background: var(--navy); color: white; }
+    .btn-navy:hover { background: #0f1d35; }
+
+    @media (max-width: 600px) {
+      .review-card { flex-direction: column; }
+      .review-actions { flex-direction: row; }
+      .admin-header { padding: 12px 16px; }
+      .admin-main { padding: 20px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <h1>Titan Admin</h1>
+    <p>Enter your admin password to manage reviews.</p>
+    <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+    <input type="password" id="passwordInput" placeholder="Admin password"
+           onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-navy" style="width:100%;margin-top:4px;" onclick="login()">Sign In</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;">
+  <div class="admin-header">
+    <h1>Titan Reviews</h1>
+    <div class="header-right">
+      <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">Pending</button>
+      <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')">Approved</button>
+      <button class="logout-btn" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    <div class="demo-note">
+      <strong>Demo mode:</strong> Reviews are stored in this browser's local storage. Submissions from other browsers/devices won't appear here. Once the database is set up, this dashboard will show all submissions.
+    </div>
+    <div class="section-title">
+      <span id="sectionLabel">Pending Reviews</span>
+      <span class="count-badge" id="countBadge">0</span>
+    </div>
+    <div id="reviewsContainer"></div>
+  </div>
+</div>
+
+<script>
+  // Demo password — change this to your own
+  const ADMIN_PASSWORD = 'titan';
+
+  let currentTab = 'pending';
+
+  function login() {
+    const pw = document.getElementById('passwordInput').value;
+    if (pw === ADMIN_PASSWORD) {
+      sessionStorage.setItem('titan_admin_authed', '1');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      loadReviews();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('titan_admin_authed');
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('loginError').style.display = 'none';
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabPending').classList.toggle('active', tab === 'pending');
+    document.getElementById('tabApproved').classList.toggle('active', tab === 'approved');
+    document.getElementById('sectionLabel').textContent =
+      tab === 'pending' ? 'Pending Reviews' : 'Approved Reviews';
+    loadReviews();
+  }
+
+  const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
+
+  function sbHeaders() {
+    return {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    };
+  }
+
+  function loadReviews() {
+    const approved = currentTab === 'approved';
+    const container = document.getElementById('reviewsContainer');
+    container.innerHTML = '<div class="empty-state">Loading...</div>';
+
+    fetch(`${SUPABASE_URL}/rest/v1/reviews?approved=eq.${approved}&order=created_at.desc`, {
+      headers: sbHeaders()
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('countBadge').textContent = data.length;
+      renderReviews(data);
+    })
+    .catch(() => {
+      container.innerHTML = '<div class="empty-state">Failed to load reviews.</div>';
+    });
+  }
+
+  function stars(n) {
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function fmt(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function esc(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderReviews(items) {
+    const container = document.getElementById('reviewsContainer');
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state">No ' + currentTab + ' reviews yet.</div>';
+      return;
+    }
+    container.innerHTML = items.map(t => `
+      <div class="review-card" id="card-${t.id}">
+        <div class="review-photo-placeholder">👤</div>
+        <div class="review-body">
+          <div class="review-meta">
+            <span class="review-name">${esc(t.name)}</span>
+            <span class="review-stars">${stars(t.rating)}</span>
+            <span class="review-service">${esc(t.service)}</span>
+            ${t.approved ? '<span class="approved-badge">&#10003; Approved</span>' : ''}
+          </div>
+          <p class="review-text">${esc(t.review)}</p>
+          <div class="review-footer">
+            ${esc(t.email)} &middot; Submitted ${fmt(t.created_at)}
+          </div>
+        </div>
+        ${currentTab === 'pending' ? `
+        <div class="review-actions">
+          <button class="action-btn approve-btn" onclick="act(${t.id},'approve',this)">&#10003; Approve</button>
+          <button class="action-btn reject-btn" onclick="act(${t.id},'reject',this)">&#10005; Reject</button>
+        </div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function act(id, action, btn) {
+    const card = document.getElementById('card-' + id);
+    card.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
+
+    const url = `${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`;
+
+    if (action === 'approve') {
+      fetch(url, {
+        method: 'PATCH',
+        headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ approved: true })
+      }).then(() => removeCard(card));
+    } else {
+      fetch(url, {
+        method: 'DELETE',
+        headers: sbHeaders()
+      }).then(() => removeCard(card));
+    }
+  }
+
+  function removeCard(card) {
+    card.style.opacity = '0';
+    setTimeout(() => {
+      card.remove();
+      const badge = document.getElementById('countBadge');
+      const n = Math.max(0, parseInt(badge.textContent || '0') - 1);
+      badge.textContent = n;
+      if (n === 0) {
+        document.getElementById('reviewsContainer').innerHTML =
+          '<div class="empty-state">No ' + currentTab + ' reviews yet.</div>';
+      }
+    }, 300);
+  }
+
+  // Auto-login if session is still valid
+  if (sessionStorage.getItem('titan_admin_authed') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadReviews();
+  }
+</script>
+
+</body>
+</html>
