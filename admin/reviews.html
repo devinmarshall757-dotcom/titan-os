@@ -204,8 +204,8 @@
 <!-- ORDER MODAL -->
 <div class="modal-backdrop" id="orderModal">
   <div class="modal">
-    <h2>Order Measurement Report</h2>
-    <p>Exact roof squares, pitch, eave length, and wall area. Ready in 2–4 hours.</p>
+    <h2>Agent Fetch Report</h2>
+    <p>Our agent will pull exact roof squares, pitch, eave length, and wall area for this property. Report ready in 2–4 hours.</p>
     <div class="modal-field">
       <label>Property Address</label>
       <input type="text" id="modalAddress" placeholder="123 Main St, Cedar Rapids, IA 52401">
@@ -220,7 +220,7 @@
     </div>
     <div class="modal-btns">
       <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn-primary" id="modalSubmitBtn" onclick="submitOrder()">Order Report</button>
+      <button class="modal-btn-primary" id="modalSubmitBtn" onclick="submitOrder()">Dispatch Agent →</button>
     </div>
   </div>
 </div>
@@ -324,7 +324,7 @@
             ? `<button class="btn-ordered">✓ Report Ready</button><button class="btn-ghost" onclick="switchTab('measurements')">View Report →</button>`
             : measStatus === 'processing'
             ? `<div class="processing-msg">⏱ Processing<br><span style="font-size:11px;font-weight:400">Check Measurements tab</span></div>`
-            : `<button class="btn-primary" onclick="openModal(${l.id},'${esc(l.address || '')}')">Order Measurement →</button>`
+            : `<button class="btn-primary" onclick="openModal(${l.id},'${esc(l.address || '')}')">Agent Fetch Report →</button>`
           }
         </div>
       </div>`;
@@ -392,11 +392,11 @@
         </div>` : '';
       const actions = item._status === 'complete'
         ? `${item.report_url ? `<a class="btn-green" href="${esc(item.report_url)}" target="_blank">↓ Download PDF</a>` : '<div class="btn-green" style="opacity:.5;cursor:default;">PDF Processing</div>'}
-           <button class="btn-ghost" onclick="openModal(${item.id},'${esc(item.address || '')}')">Re-order</button>`
+           <button class="btn-ghost" onclick="openModal(${item.id},'${esc(item.address || '')}')">Re-fetch →</button>`
         : item._status === 'processing'
         ? `<div class="processing-msg">⏱ In Progress<br><span style="font-size:11px;font-weight:400">Est. 2–4 hrs</span></div>
            <button class="btn-ghost" onclick="loadMeasurements()">↻ Refresh</button>`
-        : `<button class="btn-primary" onclick="openModal(${item.id},'${esc(item.address || '')}')">Order Report →</button>`;
+        : `<button class="btn-primary" onclick="openModal(${item.id},'${esc(item.address || '')}')">Agent Fetch Report →</button>`;
       return `<div class="order-card status-${item._status}">
         <div>
           <div class="order-top">
@@ -447,7 +447,7 @@
         switchTab('measurements');
       } else { alert('Failed to place order. Try again.'); }
     } catch(e) { alert('Error placing order.'); }
-    btn.textContent = 'Order Report'; btn.disabled = false;
+    btn.textContent = 'Dispatch Agent →'; btn.disabled = false;
   }
 
   /* ── REVIEWS ── */
