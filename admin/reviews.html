@@ -3,173 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Review Admin | Titan Contracting</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Titan Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy: #1a2744;
-      --navy-dark: #111c33;
-      --cream-light: #f7f5f2;
-      --white: #ffffff;
-      --text-dark: #1a1a2e;
-      --text-mid: #555;
-      --red: #c0392b;
-      --green: #27ae60;
-      --border: #e0ddd8;
-      --font-serif: "Plus Jakarta Sans", sans-serif;
-      --font-sans: "Inter", sans-serif;
+      --navy: #1a2744; --navy-dark: #111c33; --cream: #f7f5f2; --white: #fff;
+      --text: #1a1a2e; --mid: #555; --border: #e0ddd8;
+      --green: #27ae60; --red: #c0392b; --yellow: #d4860a; --blue: #1D4ED8;
+      --serif: "Plus Jakarta Sans", sans-serif; --sans: "Inter", sans-serif;
     }
-    body { font-family: var(--font-sans); background: var(--cream-light); color: var(--text-dark); min-height: 100vh; }
+    body { font-family: var(--sans); background: var(--cream); color: var(--text); min-height: 100vh; }
 
-    /* ── LOGIN ── */
+    /* LOGIN */
     .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .login-card {
-      background: white; border: 1px solid var(--border); border-radius: 12px;
-      padding: 40px; width: 100%; max-width: 380px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-    }
-    .login-card h1 { font-family: var(--font-serif); font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
-    .login-card p { font-size: 13px; color: var(--text-mid); margin-bottom: 24px; }
-    .login-card input {
-      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
-      border-radius: 8px; font-family: var(--font-sans); font-size: 14px;
-      outline: none; background: var(--cream-light); margin-bottom: 12px;
-    }
+    .login-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 40px; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+    .login-card h1 { font-family: var(--serif); font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: var(--mid); margin-bottom: 24px; }
+    .login-card input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--cream); margin-bottom: 12px; font-family: var(--sans); }
     .login-card input:focus { border-color: var(--navy); background: white; }
     .login-error { color: var(--red); font-size: 13px; margin-bottom: 12px; display: none; }
+    .btn-login { width: 100%; padding: 12px; background: var(--navy); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); margin-top: 4px; }
+    .btn-login:hover { background: var(--navy-dark); }
 
-    /* ── HEADER ── */
-    .admin-header {
-      background: var(--navy); color: white;
-      padding: 16px 32px; display: flex; align-items: center;
-      justify-content: space-between; position: sticky; top: 0; z-index: 100;
-    }
-    .admin-header h1 { font-family: var(--font-serif); font-size: 18px; font-weight: 800; }
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .tab-btn {
-      background: rgba(255,255,255,0.12); color: white;
-      border: 1px solid rgba(255,255,255,0.2); padding: 6px 16px;
-      border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
-      font-family: var(--font-sans); transition: background 0.2s;
-    }
-    .tab-btn.active { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
-    .tab-btn:hover { background: rgba(255,255,255,0.2); }
-    .logout-btn {
-      background: transparent; color: rgba(255,255,255,0.6); border: none;
-      cursor: pointer; font-size: 13px; font-family: var(--font-sans);
-    }
+    /* HEADER */
+    .admin-header { background: var(--navy); color: white; padding: 0 28px; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .admin-header h1 { font-family: var(--serif); font-size: 17px; font-weight: 800; }
+    .header-right { display: flex; align-items: center; gap: 6px; }
+    .tab-btn { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: var(--sans); transition: all 0.15s; white-space: nowrap; }
+    .tab-btn.active { background: rgba(255,255,255,0.28); color: white; border-color: rgba(255,255,255,0.4); }
+    .tab-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+    .logout-btn { background: transparent; color: rgba(255,255,255,0.45); border: none; cursor: pointer; font-size: 12px; font-family: var(--sans); margin-left: 8px; }
     .logout-btn:hover { color: white; }
 
-    /* ── MAIN ── */
-    .admin-main { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
-    .section-title { font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 20px; }
-    .count-badge {
-      display: inline-block; background: var(--navy); color: white;
-      font-size: 12px; font-weight: 700; padding: 2px 9px;
-      border-radius: 10px; margin-left: 8px; vertical-align: middle;
-    }
-    .empty-state {
-      text-align: center; padding: 48px 24px; color: var(--text-mid); font-size: 14px;
-      background: white; border: 1px solid var(--border); border-radius: 10px;
-    }
-    .demo-note {
-      background: #fffbea; border: 1px solid #f5e190; border-radius: 8px;
-      padding: 12px 16px; font-size: 13px; color: #7a6800; margin-bottom: 24px;
-      line-height: 1.5;
-    }
-    .demo-note strong { font-weight: 700; }
+    /* MAIN */
+    .admin-main { max-width: 940px; margin: 0 auto; padding: 28px 20px; }
 
-    /* ── REVIEW CARD ── */
-    .review-card {
-      background: white; border: 1px solid var(--border); border-radius: 10px;
-      padding: 24px; margin-bottom: 16px; display: flex; gap: 20px; align-items: flex-start;
-      transition: opacity 0.3s;
-    }
-    .review-photo { flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
-    .review-photo-placeholder {
-      flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px;
-      background: var(--cream-light); border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; color: #bbb;
-    }
-    .review-body { flex: 1; min-width: 0; }
-    .review-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
-    .review-name { font-size: 15px; font-weight: 700; color: var(--navy); }
-    .review-stars { color: #f5a623; font-size: 16px; letter-spacing: 1px; }
-    .review-service {
-      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--text-mid); background: var(--cream-light); padding: 3px 8px; border-radius: 4px;
-    }
-    .review-text { font-size: 14px; color: var(--text-dark); line-height: 1.6; margin-bottom: 8px; }
-    .review-footer { font-size: 12px; color: #aaa; }
-    .review-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
-    .action-btn {
-      padding: 8px 18px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: var(--font-sans); white-space: nowrap;
-    }
-    .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .approve-btn { background: var(--green); color: white; }
-    .approve-btn:hover:not(:disabled) { opacity: 0.88; }
-    .reject-btn { background: #f5f5f5; color: var(--red); border: 1px solid #fdd; }
-    .reject-btn:hover:not(:disabled) { background: #fff0f0; }
-    .approved-badge {
-      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--green); background: #e8f5e9; padding: 4px 10px; border-radius: 4px;
-    }
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 4px; }
+    .stat-val { font-size: 24px; font-weight: 800; color: var(--navy); font-family: var(--serif); }
+    .stat-sub { font-size: 11px; color: var(--mid); margin-top: 2px; }
 
-    .btn { padding: 10px 22px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); }
-    .btn-navy { background: var(--navy); color: white; }
-    .btn-navy:hover { background: #0f1d35; }
+    /* TOOLBAR */
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .section-title { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--navy); }
+    .count-badge { display: inline-block; background: var(--navy); color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+    .filter-tabs { display: flex; gap: 6px; }
+    .filter-tab { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--mid); font-family: var(--sans); transition: all 0.15s; }
+    .filter-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
 
-    /* ── LEAD CARDS ── */
-    .lead-card {
-      background: white; border: 1px solid var(--border); border-radius: 10px;
-      padding: 20px 24px; margin-bottom: 14px;
-      display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
-    }
-    .lead-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+    /* EMPTY / SHARED */
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--mid); font-size: 14px; background: white; border: 1px solid var(--border); border-radius: 10px; }
+
+    /* LEAD CARDS */
+    .lead-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+    .lead-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
     .lead-name { font-size: 15px; font-weight: 700; color: var(--navy); }
-    .lead-service {
-      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--text-mid); background: var(--cream-light); padding: 3px 8px; border-radius: 4px;
-    }
-    .lead-range { font-size: 13px; font-weight: 700; color: #27ae60; }
-    .lead-meta { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+    .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mid); background: var(--cream); padding: 3px 8px; border-radius: 4px; }
+    .tag-green { background: #e8f5e9; color: var(--green); }
+    .tag-yellow { background: #fff8e1; color: var(--yellow); }
+    .lead-range { font-size: 13px; font-weight: 700; color: var(--green); }
+    .lead-meta { font-size: 13px; color: var(--mid); line-height: 1.8; }
     .lead-meta a { color: var(--navy); text-decoration: none; font-weight: 600; }
     .lead-meta a:hover { text-decoration: underline; }
-    .lead-address { font-size: 13px; color: var(--text-dark); margin: 4px 0; font-weight: 500; }
-    .lead-note { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; }
-    .lead-date { font-size: 11px; color: #bbb; margin-top: 4px; }
-    .lead-actions { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
-    .report-btn {
-      background: var(--navy); color: white; border: none; border-radius: 6px;
-      padding: 9px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
-      font-family: var(--font-sans); text-align: center; text-decoration: none;
-      display: block; transition: background 0.2s; white-space: nowrap;
-    }
-    .report-btn:hover { background: #0f1d35; }
-    .report-ordered-btn {
-      background: #e8f5e9; color: var(--green); border: 1px solid #c8e6c9;
-      border-radius: 6px; padding: 9px 14px; font-size: 12px; font-weight: 700;
-      cursor: pointer; font-family: var(--font-sans); white-space: nowrap;
-    }
-    .mark-done-btn {
-      background: #f5f5f5; color: #555; border: 1px solid #ddd;
-      border-radius: 6px; padding: 7px 14px; font-size: 11px; font-weight: 600;
-      cursor: pointer; font-family: var(--font-sans); white-space: nowrap;
-    }
-    .mark-done-btn:hover { background: #eee; }
+    .lead-address { font-size: 13px; color: var(--text); margin: 3px 0; font-weight: 500; }
+    .lead-note { font-size: 12px; color: #999; font-style: italic; margin-top: 3px; }
+    .lead-date { font-size: 11px; color: #bbb; margin-top: 3px; }
+    .lead-actions { display: flex; flex-direction: column; gap: 7px; min-width: 148px; }
 
-    @media (max-width: 600px) {
+    /* MEASUREMENT ORDER CARDS */
+    .order-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+    .order-card.status-complete { border-left: 3px solid var(--green); }
+    .order-card.status-processing { border-left: 3px solid var(--yellow); }
+    .order-card.status-pending { border-left: 3px solid #ccc; }
+    .order-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+    .order-name { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .order-address { font-size: 13px; color: var(--text); font-weight: 500; margin: 3px 0; }
+    .order-meta { font-size: 12px; color: #bbb; margin-top: 3px; }
+    .order-actions { display: flex; flex-direction: column; gap: 7px; min-width: 148px; }
+    .processing-msg { font-size: 12px; color: var(--yellow); font-weight: 600; text-align: center; padding: 8px; background: #fff8e1; border-radius: 6px; line-height: 1.5; }
+
+    /* MEASUREMENT TILES */
+    .measure-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .measure-tile { background: var(--cream); border-radius: 7px; padding: 10px 12px; }
+    .measure-tile-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); margin-bottom: 3px; }
+    .measure-tile-val { font-size: 17px; font-weight: 800; color: var(--navy); font-family: var(--serif); }
+    .measure-tile-unit { font-size: 10px; color: var(--mid); font-weight: 500; }
+
+    /* REVIEW CARDS */
+    .review-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 12px; display: flex; gap: 16px; align-items: flex-start; transition: opacity 0.3s; }
+    .review-avatar { flex-shrink: 0; width: 44px; height: 44px; border-radius: 8px; background: var(--cream); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #bbb; }
+    .review-body { flex: 1; min-width: 0; }
+    .review-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+    .review-name { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .review-stars { color: #f5a623; font-size: 15px; letter-spacing: 1px; }
+    .review-text { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 6px; }
+    .review-footer { font-size: 12px; color: #aaa; }
+    .review-actions { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+
+    /* BUTTONS */
+    .btn-primary { background: var(--navy); color: white; border: none; border-radius: 7px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; transition: background 0.15s; display: block; width: 100%; }
+    .btn-primary:hover { background: var(--navy-dark); }
+    .btn-green { background: var(--green); color: white; border: none; border-radius: 7px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; text-decoration: none; display: block; }
+    .btn-green:hover { opacity: 0.88; }
+    .btn-ghost { background: white; color: var(--mid); border: 1px solid var(--border); border-radius: 7px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; display: block; width: 100%; }
+    .btn-ghost:hover { background: var(--cream); }
+    .btn-ordered { background: #e8f5e9; color: var(--green); border: 1px solid #c8e6c9; border-radius: 7px; padding: 9px 16px; font-size: 13px; font-weight: 700; text-align: center; display: block; }
+    .btn-approve { background: var(--green); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); white-space: nowrap; }
+    .btn-approve:hover { opacity: 0.88; }
+    .btn-reject { background: #fff0f0; color: var(--red); border: 1px solid #fdd; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); white-space: nowrap; }
+    .btn-reject:hover { background: #ffe0e0; }
+    .btn-approve:disabled, .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* MODAL */
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: white; border-radius: 14px; padding: 30px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal h2 { font-family: var(--serif); font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 5px; }
+    .modal p { font-size: 13px; color: var(--mid); margin-bottom: 18px; line-height: 1.6; }
+    .modal-field { margin-bottom: 12px; }
+    .modal-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); margin-bottom: 5px; }
+    .modal-field input, .modal-field select { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 14px; outline: none; font-family: var(--sans); background: var(--cream); }
+    .modal-field input:focus, .modal-field select:focus { border-color: var(--navy); background: white; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-btn-primary { flex: 1; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+    .modal-btn-primary:hover { background: #1638b0; }
+    .modal-btn-primary:disabled { background: #aaa; cursor: not-allowed; }
+    .modal-btn-cancel { background: white; color: var(--mid); border: 1px solid var(--border); border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+    .modal-btn-cancel:hover { background: var(--cream); }
+
+    @media (max-width: 620px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .lead-card, .order-card { grid-template-columns: 1fr; }
+      .lead-actions, .order-actions { flex-direction: row; flex-wrap: wrap; }
+      .lead-actions .btn-primary, .lead-actions .btn-ghost, .order-actions .btn-primary, .order-actions .btn-ghost { width: auto; flex: 1; }
       .review-card { flex-direction: column; }
       .review-actions { flex-direction: row; }
-      .admin-header { padding: 12px 16px; }
-      .admin-main { padding: 20px 12px; }
-      .lead-card { grid-template-columns: 1fr; }
-      .lead-actions { flex-direction: row; flex-wrap: wrap; }
+      .admin-header { padding: 0 12px; }
+      .admin-main { padding: 16px 12px; }
+      .measure-grid { grid-template-columns: repeat(2, 1fr); }
+      .header-right { gap: 4px; }
+      .tab-btn { padding: 5px 10px; font-size: 11px; }
     }
   </style>
 </head>
@@ -179,11 +155,10 @@
 <div class="login-wrap" id="loginScreen">
   <div class="login-card">
     <h1>Titan Admin</h1>
-    <p>Enter your admin password to manage reviews.</p>
+    <p>Sign in to manage leads, measurements, and reviews.</p>
     <div class="login-error" id="loginError">Incorrect password. Try again.</div>
-    <input type="password" id="passwordInput" placeholder="Admin password"
-           onkeydown="if(event.key==='Enter')login()">
-    <button class="btn btn-navy" style="width:100%;margin-top:4px;" onclick="login()">Sign In</button>
+    <input type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn-login" onclick="login()">Sign In</button>
   </div>
 </div>
 
@@ -193,31 +168,90 @@
     <h1>Titan Admin</h1>
     <div class="header-right">
       <button class="tab-btn" id="tabLeads" onclick="switchTab('leads')">Leads</button>
-      <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">Reviews</button>
+      <button class="tab-btn" id="tabMeasurements" onclick="switchTab('measurements')">Measurements</button>
+      <button class="tab-btn" id="tabReviews" onclick="switchTab('reviews')">Reviews</button>
       <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')">Approved</button>
       <button class="logout-btn" onclick="logout()">Sign out</button>
     </div>
   </div>
 
   <div class="admin-main">
-    <div class="section-title">
-      <span id="sectionLabel">Pending Reviews</span>
-      <span class="count-badge" id="countBadge">0</span>
+    <!-- Measurements stats (only shown on measurements tab) -->
+    <div class="stats-row" id="measStats" style="display:none;">
+      <div class="stat-card"><div class="stat-label">Total Reports</div><div class="stat-val" id="statTotal">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">Complete</div><div class="stat-val" id="statComplete" style="color:var(--green)">—</div><div class="stat-sub">Ready to use</div></div>
+      <div class="stat-card"><div class="stat-label">Processing</div><div class="stat-val" id="statProcessing" style="color:var(--yellow)">—</div><div class="stat-sub">Est. 2–4 hrs</div></div>
+      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" id="statPending">—</div><div class="stat-sub">Not yet ordered</div></div>
     </div>
-    <div id="reviewsContainer"></div>
+
+    <div class="toolbar">
+      <div>
+        <span class="section-title" id="sectionLabel">Leads</span>
+        <span class="count-badge" id="countBadge">0</span>
+      </div>
+      <div class="filter-tabs" id="measFilters" style="display:none;">
+        <button class="filter-tab active" onclick="setMeasFilter('all',this)">All</button>
+        <button class="filter-tab" onclick="setMeasFilter('complete',this)">Complete</button>
+        <button class="filter-tab" onclick="setMeasFilter('processing',this)">Processing</button>
+        <button class="filter-tab" onclick="setMeasFilter('pending',this)">Pending</button>
+      </div>
+    </div>
+
+    <div id="mainContainer"></div>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-backdrop" id="orderModal">
+  <div class="modal">
+    <h2>Order Measurement Report</h2>
+    <p>Exact roof squares, pitch, eave length, and wall area. Ready in 2–4 hours.</p>
+    <div class="modal-field">
+      <label>Property Address</label>
+      <input type="text" id="modalAddress" placeholder="123 Main St, Cedar Rapids, IA 52401">
+    </div>
+    <div class="modal-field">
+      <label>Report Type</label>
+      <select id="modalType">
+        <option value="standard">Standard — Roof + Wall measurements</option>
+        <option value="roof_only">Roof Only</option>
+        <option value="rush">Rush (under 30 min)</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn-primary" id="modalSubmitBtn" onclick="submitOrder()">Order Report</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // Demo password — change this to your own
   const ADMIN_PASSWORD = 'titan';
+  const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
 
   let currentTab = 'leads';
+  let measFilter = 'all';
+  let allMeasItems = [];
+  let pendingOrderLeadId = null;
+
+  function sb(extra = {}) {
+    return { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...extra };
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fmt(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
 
   function login() {
-    const pw = document.getElementById('passwordInput').value;
-    if (pw === ADMIN_PASSWORD) {
-      sessionStorage.setItem('titan_admin_authed', '1');
+    if (document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
+      sessionStorage.setItem('titan_admin', '1');
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
       switchTab('leads');
@@ -227,7 +261,7 @@
   }
 
   function logout() {
-    sessionStorage.removeItem('titan_admin_authed');
+    sessionStorage.removeItem('titan_admin');
     document.getElementById('adminPanel').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('passwordInput').value = '';
@@ -236,162 +270,46 @@
 
   function switchTab(tab) {
     currentTab = tab;
-    document.getElementById('tabLeads').classList.toggle('active', tab === 'leads');
-    document.getElementById('tabPending').classList.toggle('active', tab === 'pending');
-    document.getElementById('tabApproved').classList.toggle('active', tab === 'approved');
-    if (tab === 'leads') {
-      document.getElementById('sectionLabel').textContent = 'Quote Leads';
-      loadLeads();
-    } else {
-      document.getElementById('sectionLabel').textContent =
-        tab === 'pending' ? 'Pending Reviews' : 'Approved Reviews';
-      loadReviews();
-    }
-  }
-
-  const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
-
-  function sbHeaders() {
-    return {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json'
-    };
-  }
-
-  function loadReviews() {
-    const approved = currentTab === 'approved';
-    const container = document.getElementById('reviewsContainer');
-    container.innerHTML = '<div class="empty-state">Loading...</div>';
-
-    fetch(`${SUPABASE_URL}/rest/v1/reviews?approved=eq.${approved}&order=created_at.desc`, {
-      headers: sbHeaders()
-    })
-    .then(r => r.json())
-    .then(data => {
-      document.getElementById('countBadge').textContent = data.length;
-      renderReviews(data);
-    })
-    .catch(() => {
-      container.innerHTML = '<div class="empty-state">Failed to load reviews.</div>';
+    ['leads','measurements','reviews','approved'].forEach(t => {
+      document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
     });
+    const labels = { leads: 'Quote Leads', measurements: 'Measurement Reports', reviews: 'Pending Reviews', approved: 'Approved Reviews' };
+    document.getElementById('sectionLabel').textContent = labels[tab];
+    document.getElementById('measStats').style.display = tab === 'measurements' ? 'grid' : 'none';
+    document.getElementById('measFilters').style.display = tab === 'measurements' ? 'flex' : 'none';
+
+    if (tab === 'leads') loadLeads();
+    else if (tab === 'measurements') loadMeasurements();
+    else loadReviews(tab === 'approved');
   }
 
-  function stars(n) {
-    return '★'.repeat(n) + '☆'.repeat(5 - n);
-  }
-
-  function fmt(iso) {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  function esc(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function renderReviews(items) {
-    const container = document.getElementById('reviewsContainer');
-    if (!items.length) {
-      container.innerHTML = '<div class="empty-state">No ' + currentTab + ' reviews yet.</div>';
-      return;
-    }
-    container.innerHTML = items.map(t => `
-      <div class="review-card" id="card-${t.id}">
-        <div class="review-photo-placeholder">👤</div>
-        <div class="review-body">
-          <div class="review-meta">
-            <span class="review-name">${esc(t.name)}</span>
-            <span class="review-stars">${stars(t.rating)}</span>
-            <span class="review-service">${esc(t.service)}</span>
-            ${t.approved ? '<span class="approved-badge">&#10003; Approved</span>' : ''}
-          </div>
-          <p class="review-text">${esc(t.review)}</p>
-          <div class="review-footer">
-            ${esc(t.email)} &middot; Submitted ${fmt(t.created_at)}
-          </div>
-        </div>
-        ${currentTab === 'pending' ? `
-        <div class="review-actions">
-          <button class="action-btn approve-btn" onclick="act(${t.id},'approve',this)">&#10003; Approve</button>
-          <button class="action-btn reject-btn" onclick="act(${t.id},'reject',this)">&#10005; Reject</button>
-        </div>` : ''}
-      </div>
-    `).join('');
-  }
-
-  function act(id, action, btn) {
-    const card = document.getElementById('card-' + id);
-    card.querySelectorAll('.action-btn').forEach(b => b.disabled = true);
-
-    const url = `${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`;
-
-    if (action === 'approve') {
-      fetch(url, {
-        method: 'PATCH',
-        headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ approved: true })
-      }).then(() => removeCard(card));
-    } else {
-      fetch(url, {
-        method: 'DELETE',
-        headers: sbHeaders()
-      }).then(() => removeCard(card));
-    }
-  }
-
-  function removeCard(card) {
-    card.style.opacity = '0';
-    setTimeout(() => {
-      card.remove();
-      const badge = document.getElementById('countBadge');
-      const n = Math.max(0, parseInt(badge.textContent || '0') - 1);
-      badge.textContent = n;
-      if (n === 0) {
-        document.getElementById('reviewsContainer').innerHTML =
-          '<div class="empty-state">No ' + currentTab + ' reviews yet.</div>';
-      }
-    }, 300);
-  }
-
-  function loadLeads() {
-    const container = document.getElementById('reviewsContainer');
-    container.innerHTML = '<div class="empty-state">Loading leads...</div>';
-    fetch(`${SUPABASE_URL}/rest/v1/leads?order=created_at.desc`, {
-      headers: sbHeaders()
-    })
-    .then(r => r.json())
-    .then(data => {
-      document.getElementById('countBadge').textContent = data.length;
-      renderLeads(data);
-    })
-    .catch(() => {
-      container.innerHTML = '<div class="empty-state">Failed to load leads.</div>';
-    });
-  }
-
-  function renderLeads(items) {
-    const container = document.getElementById('reviewsContainer');
-    if (!items.length) {
-      container.innerHTML = '<div class="empty-state">No leads yet — they\'ll show up here when someone uses the quote calculator.</div>';
-      return;
-    }
-    container.innerHTML = items.map(l => {
-      const range = (l.estimate_low && l.estimate_high)
-        ? `$${Number(l.estimate_low).toLocaleString()} – $${Number(l.estimate_high).toLocaleString()}`
-        : 'Custom quote';
-      const roofSnapUrl = l.address
-        ? `https://app.roofsnap.com/projects/new?address=${encodeURIComponent(l.address)}`
-        : 'https://app.roofsnap.com';
-      return `
-      <div class="lead-card" id="lead-${l.id}">
+  /* ── LEADS ── */
+  async function loadLeads() {
+    const c = document.getElementById('mainContainer');
+    c.innerHTML = '<div class="empty-state">Loading…</div>';
+    const [leadsRes, ordersRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/leads?order=created_at.desc`, { headers: sb() }),
+      fetch(`${SUPABASE_URL}/rest/v1/measurement_orders?select=lead_id,status`, { headers: sb() })
+    ]);
+    const leads = leadsRes.ok ? await leadsRes.json() : [];
+    const orders = ordersRes.ok ? await ordersRes.json() : [];
+    const orderedMap = {};
+    orders.forEach(o => { orderedMap[o.lead_id] = o.status; });
+    document.getElementById('countBadge').textContent = leads.length;
+    if (!leads.length) { c.innerHTML = '<div class="empty-state">No leads yet — they\'ll show up when someone uses the quote calculator.</div>'; return; }
+    c.innerHTML = leads.map(l => {
+      const range = (l.estimate_low && l.estimate_high) ? `$${Number(l.estimate_low).toLocaleString()} – $${Number(l.estimate_high).toLocaleString()}` : 'Custom quote';
+      const measStatus = orderedMap[l.id];
+      const measBadge = measStatus === 'complete' ? '<span class="tag tag-green">Report Ready</span>'
+        : measStatus === 'processing' ? '<span class="tag tag-yellow">Report Processing</span>'
+        : '';
+      return `<div class="lead-card">
         <div>
-          <div class="lead-header">
+          <div class="lead-top">
             <span class="lead-name">${esc(l.name)}</span>
-            <span class="lead-service">${esc(l.service)}</span>
-            <span class="lead-range">${esc(range)}</span>
+            <span class="tag">${esc(l.service)}</span>
+            <span class="lead-range">${range}</span>
+            ${measBadge}
           </div>
           <div class="lead-meta">
             <a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>
@@ -402,39 +320,184 @@
           <div class="lead-date">Submitted ${fmt(l.created_at)}</div>
         </div>
         <div class="lead-actions">
-          ${l.report_ordered
-            ? `<div class="report-ordered-btn">✓ Report Ordered</div>`
-            : `<a class="report-btn" href="${roofSnapUrl}" target="_blank" onclick="markReportOrdered(${l.id})">Order Measurement Report →</a>`
+          ${measStatus === 'complete'
+            ? `<button class="btn-ordered">✓ Report Ready</button><button class="btn-ghost" onclick="switchTab('measurements')">View Report →</button>`
+            : measStatus === 'processing'
+            ? `<div class="processing-msg">⏱ Processing<br><span style="font-size:11px;font-weight:400">Check Measurements tab</span></div>`
+            : `<button class="btn-primary" onclick="openModal(${l.id},'${esc(l.address || '')}')">Order Measurement →</button>`
           }
-          ${!l.report_ordered ? `<button class="mark-done-btn" onclick="markReportOrdered(${l.id}, true)">Mark report ordered</button>` : ''}
         </div>
       </div>`;
     }).join('');
   }
 
-  function markReportOrdered(id, skipReload) {
-    fetch(`${SUPABASE_URL}/rest/v1/leads?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ report_ordered: true })
-    }).then(() => {
-      if (skipReload) loadLeads();
-    });
-    // Optimistically update the UI
-    const card = document.getElementById('lead-' + id);
-    if (card) {
-      const actions = card.querySelector('.lead-actions');
-      actions.innerHTML = '<div class="report-ordered-btn">✓ Report Ordered</div>';
-    }
+  /* ── MEASUREMENTS ── */
+  async function loadMeasurements() {
+    const c = document.getElementById('mainContainer');
+    c.innerHTML = '<div class="empty-state">Loading…</div>';
+    const [leadsRes, ordersRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/leads?select=*&order=created_at.desc`, { headers: sb() }),
+      fetch(`${SUPABASE_URL}/rest/v1/measurement_orders?select=*&order=created_at.desc`, { headers: sb() })
+    ]);
+    const leads = leadsRes.ok ? await leadsRes.json() : [];
+    const orders = ordersRes.ok ? await ordersRes.json() : [];
+    const orderedLeadIds = new Set(orders.map(o => o.lead_id));
+    const leadsById = {};
+    leads.forEach(l => { leadsById[l.id] = l; });
+
+    const pending = leads.filter(l => !orderedLeadIds.has(l.id)).map(l => ({ ...l, _status: 'pending' }));
+    const active = orders.map(o => ({ ...(leadsById[o.lead_id] || {}), ...o, _status: o.status, _orderId: o.id }));
+    allMeasItems = [...active, ...pending];
+
+    const total = allMeasItems.length;
+    const complete = allMeasItems.filter(i => i._status === 'complete').length;
+    const processing = allMeasItems.filter(i => i._status === 'processing').length;
+    const pending2 = allMeasItems.filter(i => i._status === 'pending').length;
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statComplete').textContent = complete;
+    document.getElementById('statProcessing').textContent = processing;
+    document.getElementById('statPending').textContent = pending2;
+
+    renderMeasurements();
   }
 
-  // Auto-login if session is still valid
-  if (sessionStorage.getItem('titan_admin_authed') === '1') {
+  function setMeasFilter(f, btn) {
+    measFilter = f;
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMeasurements();
+  }
+
+  function renderMeasurements() {
+    const c = document.getElementById('mainContainer');
+    const items = measFilter === 'all' ? allMeasItems : allMeasItems.filter(i => i._status === measFilter);
+    document.getElementById('countBadge').textContent = items.length;
+    if (!items.length) { c.innerHTML = `<div class="empty-state">No ${measFilter === 'all' ? '' : measFilter + ' '}reports yet.</div>`; return; }
+    c.innerHTML = items.map(item => {
+      const statusLabel = { complete: 'Complete', processing: 'Processing', pending: 'No Report Yet' }[item._status] || '';
+      const pillClass = { complete: 'tag-green', processing: 'tag-yellow', pending: '' }[item._status] || '';
+      const tiles = item._status === 'complete' && item.measurements ? `
+        <div class="measure-grid">
+          ${[
+            ['Roof Area', item.measurements.roof_squares, 'sq'],
+            ['Pitch', item.measurements.pitch, ''],
+            ['Eave Length', item.measurements.eave_length, 'LF'],
+            ['Ridge / Hip', item.measurements.ridge_hip, 'LF'],
+            ['Wall Area', item.measurements.wall_area, 'sq ft'],
+            ['Waste Factor', item.measurements.waste_factor, '%']
+          ].map(([label, val, unit]) => `<div class="measure-tile">
+            <div class="measure-tile-label">${label}</div>
+            <div class="measure-tile-val">${val || '—'} <span class="measure-tile-unit">${unit}</span></div>
+          </div>`).join('')}
+        </div>` : '';
+      const actions = item._status === 'complete'
+        ? `${item.report_url ? `<a class="btn-green" href="${esc(item.report_url)}" target="_blank">↓ Download PDF</a>` : '<div class="btn-green" style="opacity:.5;cursor:default;">PDF Processing</div>'}
+           <button class="btn-ghost" onclick="openModal(${item.id},'${esc(item.address || '')}')">Re-order</button>`
+        : item._status === 'processing'
+        ? `<div class="processing-msg">⏱ In Progress<br><span style="font-size:11px;font-weight:400">Est. 2–4 hrs</span></div>
+           <button class="btn-ghost" onclick="loadMeasurements()">↻ Refresh</button>`
+        : `<button class="btn-primary" onclick="openModal(${item.id},'${esc(item.address || '')}')">Order Report →</button>`;
+      return `<div class="order-card status-${item._status}">
+        <div>
+          <div class="order-top">
+            <span class="order-name">${esc(item.name)}</span>
+            <span class="tag">${esc(item.service || 'General')}</span>
+            <span class="tag ${pillClass}">${statusLabel}</span>
+          </div>
+          ${item.address ? `<div class="order-address">📍 ${esc(item.address)}</div>` : ''}
+          <div class="order-meta">
+            ${item.phone ? `<a href="tel:${esc(item.phone)}" style="color:var(--navy);font-weight:600;text-decoration:none;">${esc(item.phone)}</a> · ` : ''}
+            Submitted ${fmt(item.created_at)}
+            ${item.ordered_at ? ` · Ordered ${fmt(item.ordered_at)}` : ''}
+          </div>
+          ${tiles}
+        </div>
+        <div class="order-actions">${actions}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── ORDER MODAL ── */
+  function openModal(leadId, address) {
+    pendingOrderLeadId = leadId;
+    document.getElementById('modalAddress').value = address || '';
+    document.getElementById('modalType').value = 'standard';
+    document.getElementById('orderModal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('orderModal').classList.remove('open');
+    pendingOrderLeadId = null;
+  }
+  document.getElementById('orderModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+  async function submitOrder() {
+    const address = document.getElementById('modalAddress').value.trim();
+    if (!address) { alert('Please enter the property address.'); return; }
+    const btn = document.getElementById('modalSubmitBtn');
+    btn.textContent = 'Ordering…'; btn.disabled = true;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/measurement_orders`, {
+        method: 'POST',
+        headers: { ...sb(), 'Prefer': 'return=representation' },
+        body: JSON.stringify({ lead_id: pendingOrderLeadId, address, report_type: document.getElementById('modalType').value, status: 'processing', ordered_at: new Date().toISOString() })
+      });
+      if (res.ok) {
+        // TODO: await fetch('/api/order-measurement', { method:'POST', body: JSON.stringify({ address, lead_id: pendingOrderLeadId }) })
+        closeModal();
+        switchTab('measurements');
+      } else { alert('Failed to place order. Try again.'); }
+    } catch(e) { alert('Error placing order.'); }
+    btn.textContent = 'Order Report'; btn.disabled = false;
+  }
+
+  /* ── REVIEWS ── */
+  function loadReviews(approved) {
+    const c = document.getElementById('mainContainer');
+    c.innerHTML = '<div class="empty-state">Loading…</div>';
+    fetch(`${SUPABASE_URL}/rest/v1/reviews?approved=eq.${approved}&order=created_at.desc`, { headers: sb() })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('countBadge').textContent = data.length;
+        if (!data.length) { c.innerHTML = `<div class="empty-state">No ${approved ? 'approved' : 'pending'} reviews yet.</div>`; return; }
+        c.innerHTML = data.map(t => `
+          <div class="review-card" id="card-${t.id}">
+            <div class="review-avatar">👤</div>
+            <div class="review-body">
+              <div class="review-top">
+                <span class="review-name">${esc(t.name)}</span>
+                <span class="review-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</span>
+                <span class="tag">${esc(t.service)}</span>
+                ${t.approved ? '<span class="tag tag-green">✓ Approved</span>' : ''}
+              </div>
+              <p class="review-text">${esc(t.review)}</p>
+              <div class="review-footer">${esc(t.email)} · ${fmt(t.created_at)}</div>
+            </div>
+            ${!approved ? `<div class="review-actions">
+              <button class="btn-approve" onclick="actReview(${t.id},'approve')">✓ Approve</button>
+              <button class="btn-reject" onclick="actReview(${t.id},'reject')">✕ Reject</button>
+            </div>` : ''}
+          </div>`).join('');
+      });
+  }
+
+  function actReview(id, action) {
+    const card = document.getElementById('card-' + id);
+    card.querySelectorAll('button').forEach(b => b.disabled = true);
+    const url = `${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`;
+    const req = action === 'approve'
+      ? fetch(url, { method: 'PATCH', headers: { ...sb(), 'Prefer': 'return=minimal' }, body: JSON.stringify({ approved: true }) })
+      : fetch(url, { method: 'DELETE', headers: sb() });
+    req.then(() => {
+      card.style.opacity = '0';
+      setTimeout(() => { card.remove(); const b = document.getElementById('countBadge'); b.textContent = Math.max(0, parseInt(b.textContent||'0')-1); }, 300);
+    });
+  }
+
+  if (sessionStorage.getItem('titan_admin') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     switchTab('leads');
   }
 </script>
-
 </body>
 </html>
