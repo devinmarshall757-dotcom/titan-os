@@ -124,11 +124,52 @@
     .btn-navy { background: var(--navy); color: white; }
     .btn-navy:hover { background: #0f1d35; }
 
+    /* ── LEAD CARDS ── */
+    .lead-card {
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px 24px; margin-bottom: 14px;
+      display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
+    }
+    .lead-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+    .lead-name { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .lead-service {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-mid); background: var(--cream-light); padding: 3px 8px; border-radius: 4px;
+    }
+    .lead-range { font-size: 13px; font-weight: 700; color: #27ae60; }
+    .lead-meta { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+    .lead-meta a { color: var(--navy); text-decoration: none; font-weight: 600; }
+    .lead-meta a:hover { text-decoration: underline; }
+    .lead-address { font-size: 13px; color: var(--text-dark); margin: 4px 0; font-weight: 500; }
+    .lead-note { font-size: 12px; color: #888; font-style: italic; margin-top: 4px; }
+    .lead-date { font-size: 11px; color: #bbb; margin-top: 4px; }
+    .lead-actions { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
+    .report-btn {
+      background: var(--navy); color: white; border: none; border-radius: 6px;
+      padding: 9px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-sans); text-align: center; text-decoration: none;
+      display: block; transition: background 0.2s; white-space: nowrap;
+    }
+    .report-btn:hover { background: #0f1d35; }
+    .report-ordered-btn {
+      background: #e8f5e9; color: var(--green); border: 1px solid #c8e6c9;
+      border-radius: 6px; padding: 9px 14px; font-size: 12px; font-weight: 700;
+      cursor: pointer; font-family: var(--font-sans); white-space: nowrap;
+    }
+    .mark-done-btn {
+      background: #f5f5f5; color: #555; border: 1px solid #ddd;
+      border-radius: 6px; padding: 7px 14px; font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: var(--font-sans); white-space: nowrap;
+    }
+    .mark-done-btn:hover { background: #eee; }
+
     @media (max-width: 600px) {
       .review-card { flex-direction: column; }
       .review-actions { flex-direction: row; }
       .admin-header { padding: 12px 16px; }
       .admin-main { padding: 20px 12px; }
+      .lead-card { grid-template-columns: 1fr; }
+      .lead-actions { flex-direction: row; flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -149,9 +190,10 @@
 <!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;">
   <div class="admin-header">
-    <h1>Titan Reviews</h1>
+    <h1>Titan Admin</h1>
     <div class="header-right">
-      <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">Pending</button>
+      <button class="tab-btn" id="tabLeads" onclick="switchTab('leads')">Leads</button>
+      <button class="tab-btn active" id="tabPending" onclick="switchTab('pending')">Reviews</button>
       <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')">Approved</button>
       <button class="logout-btn" onclick="logout()">Sign out</button>
     </div>
@@ -170,7 +212,7 @@
   // Demo password — change this to your own
   const ADMIN_PASSWORD = 'titan';
 
-  let currentTab = 'pending';
+  let currentTab = 'leads';
 
   function login() {
     const pw = document.getElementById('passwordInput').value;
@@ -178,7 +220,7 @@
       sessionStorage.setItem('titan_admin_authed', '1');
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
-      loadReviews();
+      switchTab('leads');
     } else {
       document.getElementById('loginError').style.display = 'block';
     }
@@ -194,11 +236,17 @@
 
   function switchTab(tab) {
     currentTab = tab;
+    document.getElementById('tabLeads').classList.toggle('active', tab === 'leads');
     document.getElementById('tabPending').classList.toggle('active', tab === 'pending');
     document.getElementById('tabApproved').classList.toggle('active', tab === 'approved');
-    document.getElementById('sectionLabel').textContent =
-      tab === 'pending' ? 'Pending Reviews' : 'Approved Reviews';
-    loadReviews();
+    if (tab === 'leads') {
+      document.getElementById('sectionLabel').textContent = 'Quote Leads';
+      loadLeads();
+    } else {
+      document.getElementById('sectionLabel').textContent =
+        tab === 'pending' ? 'Pending Reviews' : 'Approved Reviews';
+      loadReviews();
+    }
   }
 
   const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
@@ -308,11 +356,83 @@
     }, 300);
   }
 
+  function loadLeads() {
+    const container = document.getElementById('reviewsContainer');
+    container.innerHTML = '<div class="empty-state">Loading leads...</div>';
+    fetch(`${SUPABASE_URL}/rest/v1/leads?order=created_at.desc`, {
+      headers: sbHeaders()
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('countBadge').textContent = data.length;
+      renderLeads(data);
+    })
+    .catch(() => {
+      container.innerHTML = '<div class="empty-state">Failed to load leads.</div>';
+    });
+  }
+
+  function renderLeads(items) {
+    const container = document.getElementById('reviewsContainer');
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state">No leads yet — they\'ll show up here when someone uses the quote calculator.</div>';
+      return;
+    }
+    container.innerHTML = items.map(l => {
+      const range = (l.estimate_low && l.estimate_high)
+        ? `$${Number(l.estimate_low).toLocaleString()} – $${Number(l.estimate_high).toLocaleString()}`
+        : 'Custom quote';
+      const roofSnapUrl = l.address
+        ? `https://app.roofsnap.com/projects/new?address=${encodeURIComponent(l.address)}`
+        : 'https://app.roofsnap.com';
+      return `
+      <div class="lead-card" id="lead-${l.id}">
+        <div>
+          <div class="lead-header">
+            <span class="lead-name">${esc(l.name)}</span>
+            <span class="lead-service">${esc(l.service)}</span>
+            <span class="lead-range">${esc(range)}</span>
+          </div>
+          <div class="lead-meta">
+            <a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>
+            ${l.email ? ` · <a href="mailto:${esc(l.email)}">${esc(l.email)}</a>` : ''}
+          </div>
+          ${l.address ? `<div class="lead-address">📍 ${esc(l.address)}</div>` : ''}
+          ${l.note ? `<div class="lead-note">"${esc(l.note)}"</div>` : ''}
+          <div class="lead-date">Submitted ${fmt(l.created_at)}</div>
+        </div>
+        <div class="lead-actions">
+          ${l.report_ordered
+            ? `<div class="report-ordered-btn">✓ Report Ordered</div>`
+            : `<a class="report-btn" href="${roofSnapUrl}" target="_blank" onclick="markReportOrdered(${l.id})">Order Measurement Report →</a>`
+          }
+          ${!l.report_ordered ? `<button class="mark-done-btn" onclick="markReportOrdered(${l.id}, true)">Mark report ordered</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function markReportOrdered(id, skipReload) {
+    fetch(`${SUPABASE_URL}/rest/v1/leads?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ report_ordered: true })
+    }).then(() => {
+      if (skipReload) loadLeads();
+    });
+    // Optimistically update the UI
+    const card = document.getElementById('lead-' + id);
+    if (card) {
+      const actions = card.querySelector('.lead-actions');
+      actions.innerHTML = '<div class="report-ordered-btn">✓ Report Ordered</div>';
+    }
+  }
+
   // Auto-login if session is still valid
   if (sessionStorage.getItem('titan_admin_authed') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
-    loadReviews();
+    switchTab('leads');
   }
 </script>
 
