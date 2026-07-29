@@ -850,42 +850,47 @@ const serviceQuestions = {
 };
 
 const estimates = {
+  // Base = architectural mid-grade shingles ($300–$470/sq), roof sq ≈ home sqft × 1.15 / 100
   roofing: {
-    "Under 1,000": [5500, 9000],
-    "1,000 – 1,500": [7000, 11500],
-    "1,500 – 2,000": [9000, 14000],
-    "2,000 – 2,500": [11000, 17000],
-    "2,500 – 3,000": [13500, 20000],
-    "3,000+": [16000, 26000]
+    "Under 1,000": [3600, 5600],
+    "1,000 – 1,500": [4800, 7500],
+    "1,500 – 2,000": [6300, 9900],
+    "2,000 – 2,500": [7800, 12200],
+    "2,500 – 3,000": [9600, 15000],
+    "3,000+": [12000, 18800]
   },
+  // Base = vinyl economy ($4–$7.50/sf), exterior wall ≈ 45% of home sqft
   siding: {
-    "Under 1,000": [6000, 10000],
-    "1,000 – 1,500": [9000, 14000],
-    "1,500 – 2,000": [12000, 18000],
-    "2,000 – 2,500": [15000, 22000],
-    "2,500 – 3,000": [18000, 27000],
-    "3,000+": [22000, 34000]
+    "Under 1,000": [2000, 3400],
+    "1,000 – 1,500": [2400, 4500],
+    "1,500 – 2,000": [3000, 5700],
+    "2,000 – 2,500": [3700, 6900],
+    "2,500 – 3,000": [4300, 8100],
+    "3,000+": [5400, 10100]
   },
+  // Base = mid-grade double-hung installed ($650–$1,100 each)
   windows: {
-    "1 – 4": [1600, 4200],
-    "5 – 8": [3500, 8000],
-    "9 – 12": [5500, 12000],
-    "13 – 16": [7500, 16000],
-    "17+": [10000, 22000]
+    "1 – 4": [1600, 4400],
+    "5 – 8": [4200, 8800],
+    "9 – 12": [6800, 13200],
+    "13 – 16": [9400, 17600],
+    "17+": [13000, 22000]
   },
+  // Base = 5" seamless aluminum ($5–$10/LF)
   gutters: {
-    "Under 1,000": [1000, 1800],
-    "1,000 – 1,800": [1400, 2400],
-    "1,800 – 2,500": [1800, 3200],
-    "2,500 – 3,500": [2400, 4000],
-    "3,500+": [3000, 5000]
+    "Under 1,000": [500, 1000],
+    "1,000 – 1,800": [650, 1300],
+    "1,800 – 2,500": [800, 1600],
+    "2,500 – 3,500": [1000, 2000],
+    "3,500+": [1200, 2900]
   },
+  // Interior paint: $1.30–$3.30/sf, per-room ranges
   painting: {
-    "1 – 2 rooms": [800, 1800],
-    "3 – 5 rooms": [2000, 4500],
-    "6 – 8 rooms": [3500, 7000],
-    "Whole home": [5000, 12000],
-    "N/A (exterior only)": [2500, 6000]
+    "1 – 2 rooms": [600, 1600],
+    "3 – 5 rooms": [1500, 4000],
+    "6 – 8 rooms": [3000, 6500],
+    "Whole home": [4500, 10000],
+    "N/A (exterior only)": [3000, 10000]
   },
   other: {
     default: [null, null]
@@ -941,9 +946,17 @@ function calcEstimate() {
   }
 
   // Material upgrades
-  if (answers.material === "LP SmartSide (popular)") { low *= 1.1; high *= 1.1; }
-  if (answers.material === "Fiber cement") { low *= 1.25; high *= 1.25; }
-  if (answers.material === "Impact-resistant") { low *= 1.15; high *= 1.15; }
+  // Roofing: 3-tab ($230–$360/sq) vs arch base ($300–$470/sq) vs impact ($420–$720/sq)
+  if (answers.material === "Standard 3-tab") { low = Math.round(low * 0.77); high = Math.round(high * 0.77); }
+  if (answers.material === "Impact-resistant") { low = Math.round(low * 1.45); high = Math.round(high * 1.45); }
+  // Siding: LP SmartSide ($6.50–$10.50/sf) vs vinyl base ($4–$7.50/sf), fiber cement ($8–$16/sf)
+  if (answers.material === "LP SmartSide (popular)") { low = Math.round(low * 1.55); high = Math.round(high * 1.55); }
+  if (answers.material === "Fiber cement") { low = Math.round(low * 2.0); high = Math.round(high * 2.0); }
+  // Windows: larger/picture windows add ~35%
+  if (answers.size === "Larger / picture") { low = Math.round(low * 1.35); high = Math.round(high * 1.35); }
+  // Gutters: cleaning-only is a flat service call, guards add significant cost
+  if (answers.service === "Gutter cleaning only") { return [100, 300]; }
+  if (answers.service === "Guards + cleaning") { low = Math.round(low * 2.2); high = Math.round(high * 2.8); }
 
   return [Math.round(low / 100) * 100, Math.round(high / 100) * 100];
 }
