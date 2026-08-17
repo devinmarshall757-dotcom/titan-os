@@ -874,17 +874,21 @@
       });
   }
 
-  function actReview(id, action) {
+  async function actReview(id, action) {
     const card = document.getElementById('card-' + id);
     card.querySelectorAll('button').forEach(b => b.disabled = true);
     const url = `${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`;
-    const req = action === 'approve'
-      ? fetch(url, { method: 'PATCH', headers: { ...sb(), 'Prefer': 'return=minimal' }, body: JSON.stringify({ approved: true }) })
-      : fetch(url, { method: 'DELETE', headers: sb() });
-    req.then(() => {
+    try {
+      const res = action === 'approve'
+        ? await fetch(url, { method: 'PATCH', headers: { ...sb(), 'Prefer': 'return=minimal' }, body: JSON.stringify({ approved: true }) })
+        : await fetch(url, { method: 'DELETE', headers: sb() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       card.style.opacity = '0';
       setTimeout(() => { card.remove(); const b = document.getElementById('countBadge'); b.textContent = Math.max(0, parseInt(b.textContent||'0')-1); }, 300);
-    });
+    } catch(e) {
+      card.querySelectorAll('button').forEach(b => b.disabled = false);
+      alert('Action failed — please try again. (' + e.message + ')');
+    }
   }
 
   /* ── PIPELINE ── */
@@ -1026,7 +1030,8 @@
 
   async function deleteJob() {
     if (!editingJob || !confirm('Delete this job?')) return;
-    await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${editingJob.id}`, { method: 'DELETE', headers: sb() });
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${editingJob.id}`, { method: 'DELETE', headers: sb() });
+    if (!res.ok) { alert('Delete failed — please try again.'); return; }
     closeJobModal(); loadPipeline();
   }
 

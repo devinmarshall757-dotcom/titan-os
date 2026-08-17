@@ -12,6 +12,19 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Name and phone are required' });
   }
 
+  // Sanitize all user input before interpolating into HTML
+  function he(s) {
+    if (!s) return '';
+    return String(s).slice(0, 1000)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+  }
+  const safeName    = he(name);
+  const safePhone   = he(phone);
+  const safeEmail   = he(email);
+  const safeService = he(service);
+  const safeMessage = he(message);
+
   // Save lead to Supabase — awaited so failures are caught before responding
   const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
     method: 'POST',
@@ -68,18 +81,18 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         from: 'Titan Website <hello@titanconsultingcontracting.com>',
         to: ['Landon.diehl@titanconsultingcontracting.com'],
-        subject: `New Estimate Request — ${name}`,
+        subject: `New Estimate Request — ${safeName}`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;">
             <h2 style="color:#131e38;margin-bottom:4px;">New Estimate Request</h2>
             <p style="color:#666;margin-top:0;">Submitted from titanconsultingcontracting.com</p>
             <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
             <table style="width:100%;border-collapse:collapse;">
-              <tr><td style="padding:8px 0;color:#888;width:120px;">Name</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
-              <tr><td style="padding:8px 0;color:#888;">Phone</td><td style="padding:8px 0;font-weight:600;"><a href="tel:${phone}" style="color:#131e38;">${phone}</a></td></tr>
-              ${email ? `<tr><td style="padding:8px 0;color:#888;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#131e38;">${email}</a></td></tr>` : ''}
-              ${service ? `<tr><td style="padding:8px 0;color:#888;">Service</td><td style="padding:8px 0;">${service}</td></tr>` : ''}
-              ${message ? `<tr><td style="padding:8px 0;color:#888;vertical-align:top;">Details</td><td style="padding:8px 0;white-space:pre-line;">${message}</td></tr>` : ''}
+              <tr><td style="padding:8px 0;color:#888;width:120px;">Name</td><td style="padding:8px 0;font-weight:600;">${safeName}</td></tr>
+              <tr><td style="padding:8px 0;color:#888;">Phone</td><td style="padding:8px 0;font-weight:600;">${safePhone}</td></tr>
+              ${safeEmail ? `<tr><td style="padding:8px 0;color:#888;">Email</td><td style="padding:8px 0;">${safeEmail}</td></tr>` : ''}
+              ${safeService ? `<tr><td style="padding:8px 0;color:#888;">Service</td><td style="padding:8px 0;">${safeService}</td></tr>` : ''}
+              ${safeMessage ? `<tr><td style="padding:8px 0;color:#888;vertical-align:top;">Details</td><td style="padding:8px 0;white-space:pre-line;">${safeMessage}</td></tr>` : ''}
             </table>
             ${measureHtml}
             <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
