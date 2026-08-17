@@ -270,112 +270,253 @@ class TestServiceAgreement(unittest.TestCase):
         self.assertIn('Server-side password checking alone does not constitute production authentication', self.text)
 
 
-# ── EPT fetch safety ──────────────────────────────────────────────────────────
+# ── runtime dependency gate ───────────────────────────────────────────────────
 
-class TestEptFetch(unittest.TestCase):
-    def _load_ept(self):
-        sys.path.insert(0, 'api')
-        import types
-        from unittest.mock import MagicMock
-        # Stub C-extension deps that may be absent in the test venv
-        for mod_name in ('laspy', 'lazrs'):
-            if mod_name not in sys.modules:
-                sys.modules[mod_name] = types.ModuleType(mod_name)
-        if 'numpy' not in sys.modules:
+class TestRuntimeImports(unittest.TestCase):
+    """Mandatory gate: all production runtime deps must be importable.
+    This test fails (not skips) when deps are missing so CI surfaces it clearly.
+    Install with: pip install -r requirements.txt"""
+
+    def test_runtime_deps_importable(self):
+        import importlib
+        missing = []
+        for mod in ('numpy', 'laspy', 'lazrs', 'scipy', 'sklearn', 'shapely', 'pyproj', 'requests'):
             try:
-                import numpy  # noqa: F401 — use the real thing if available
+                importlib.import_module(mod)
             except ImportError:
-                np_stub = MagicMock()
-                np_stub.concatenate = MagicMock(return_value=MagicMock())
-                np_stub.column_stack = MagicMock(return_value=MagicMock())
-                np_stub.asarray = MagicMock(return_value=MagicMock())
-                sys.modules['numpy'] = np_stub
-        # pyproj needs a working Transformer stub
-        if 'pyproj' not in sys.modules:
-            pyproj_stub = types.ModuleType('pyproj')
-            mock_t = MagicMock()
-            mock_t.transform.return_value = (-10216474.0, 5165920.0)
-            pyproj_stub.Transformer = MagicMock()
-            pyproj_stub.Transformer.from_crs.return_value = mock_t
-            sys.modules['pyproj'] = pyproj_stub
-        if 'ept_fetch' in sys.modules:
-            return sys.modules['ept_fetch']
-        import ept_fetch
-        return ept_fetch
+                missing.append(mod)
+        self.assertEqual(
+            missing, [],
+            f"Missing runtime dependencies: {missing}. Run: pip install -r requirements.txt"
+        )
 
-    def test_empty_node_list_raises_coverage_error(self):
-        ept_fetch = self._load_ept()
-        from unittest.mock import patch, MagicMock
-        mock_ept = MagicMock()
-        mock_ept.bounds = [-1e7, -1e7, 0, 1e7, 1e7, 1000]
-        mock_ept.side = 2e7
-        mock_ept.resource = 'test_resource'
-        with patch.object(ept_fetch, 'load_resource', return_value=mock_ept), \
-             patch.object(ept_fetch, 'find_overlapping_nodes', return_value=[]), \
-             patch('requests.Session'):
-            with self.assertRaises(ept_fetch.LidarCoverageError):
-                ept_fetch.crop_property('test_resource', -91.6, 41.9)
 
-    def test_empty_point_arrays_raises_coverage_error(self):
-        ept_fetch = self._load_ept()
-        import numpy as np
-        from unittest.mock import patch, MagicMock
+# ── EPT fetch boundary safety (requires real numpy) ──────────────────────────
+
+try:
+    import numpy as _np
+    _NUMPY_AVAILABLE = True
+except ImportError:
+    _NUMPY_AVAILABLE = False
+
+
+def _load_ept_module():
+    """Load ept_fetch with only the unavoidable C-extension stubs (laspy, lazrs, pyproj).
+    numpy is NOT stubbed — tests that exercise array operations must use the real thing."""
+    sys.path.insert(0, 'api')
+    for mod_name in ('laspy', 'lazrs'):
+        if mod_name not in sys.modules:
+            sys.modules[mod_name] = types.ModuleType(mod_name)
+    if 'pyproj' not in sys.modules:
+        pyproj_stub = types.ModuleType('pyproj')
+        mock_t = MagicMock()
+        mock_t.transform.return_value = (-10216474.0, 5165920.0)
+        pyproj_stub.Transformer = MagicMock()
+        pyproj_stub.Transformer.from_crs.return_value = mock_t
+        sys.modules['pyproj'] = pyproj_stub
+    if 'ept_fetch' not in sys.modules:
+        import ept_fetch  # noqa: F401
+    return sys.modules['ept_fetch']
+
+
+@unittest.skipUnless(_NUMPY_AVAILABLE, "numpy not installed — run: pip install -r requirements.txt")
+class TestEptFetchBoundary(unittest.TestCase):
+    """Tests that exercise real numpy array operations in ept_fetch.crop_property."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.ef = _load_ept_module()
+
+    def _mock_ept(self):
         mock_ept = MagicMock()
-        mock_ept.bounds = [-1e7, -1e7, 0, 1e7, 1e7, 1000]
-        mock_ept.side = 2e7
+        mock_ept.bounds = [-1.1e7, -1.1e7, 0, 1.1e7, 1.1e7, 1000]
+        mock_ept.side = 2.2e7
         mock_ept.resource = 'test_resource'
-        empty_xyz = np.zeros((0, 3))
-        empty_cls = np.zeros(0)
-        with patch.object(ept_fetch, 'load_resource', return_value=mock_ept), \
-             patch.object(ept_fetch, 'find_overlapping_nodes', return_value=['0-0-0-0']), \
-             patch.object(ept_fetch, 'download_node', return_value=(empty_xyz, empty_cls)), \
+        return mock_ept
+
+    def test_zero_node_keys_raises(self):
+        with patch.object(self.ef, 'load_resource', return_value=self._mock_ept()), \
+             patch.object(self.ef, 'find_overlapping_nodes', return_value=[]), \
              patch('requests.Session'):
-            with self.assertRaises(ept_fetch.LidarCoverageError):
-                ept_fetch.crop_property('test_resource', -91.6, 41.9)
+            with self.assertRaises(self.ef.LidarCoverageError):
+                self.ef.crop_property('test_resource', -91.6, 41.9)
+
+    def test_all_empty_node_arrays_raises(self):
+        empty_xyz = _np.zeros((0, 3))
+        empty_cls = _np.zeros(0)
+        with patch.object(self.ef, 'load_resource', return_value=self._mock_ept()), \
+             patch.object(self.ef, 'find_overlapping_nodes', return_value=['0-0-0-0']), \
+             patch.object(self.ef, 'download_node', return_value=(empty_xyz, empty_cls)), \
+             patch('requests.Session'):
+            with self.assertRaises(self.ef.LidarCoverageError):
+                self.ef.crop_property('test_resource', -91.6, 41.9)
+
+    def test_points_outside_crop_bbox_raises(self):
+        """Points downloaded but all outside the crop bounding box → coverage error."""
+        # Crop is a small box around Cedar Rapids in EPSG:3857 (~±45m).
+        # Put all points far outside that box.
+        far_xyz = _np.array([[0.0, 0.0, 100.0], [1.0, 1.0, 101.0]])
+        far_cls = _np.array([2, 2])
+        with patch.object(self.ef, 'load_resource', return_value=self._mock_ept()), \
+             patch.object(self.ef, 'find_overlapping_nodes', return_value=['0-0-0-0']), \
+             patch.object(self.ef, 'download_node', return_value=(far_xyz, far_cls)), \
+             patch('requests.Session'):
+            with self.assertRaises(self.ef.LidarCoverageError):
+                self.ef.crop_property('test_resource', -91.6, 41.9)
+
+    def test_mismatched_xyz_cls_lengths_raises(self):
+        """download_node returns mismatched xyz/cls arrays → coverage error after concatenation."""
+        xyz = _np.zeros((5, 3))   # 5 points
+        cls = _np.zeros(3)        # 3 classifications — deliberately mismatched
+        with patch.object(self.ef, 'load_resource', return_value=self._mock_ept()), \
+             patch.object(self.ef, 'find_overlapping_nodes', return_value=['0-0-0-0']), \
+             patch.object(self.ef, 'download_node', return_value=(xyz, cls)), \
+             patch('requests.Session'):
+            with self.assertRaises(self.ef.LidarCoverageError):
+                self.ef.crop_property('test_resource', -91.6, 41.9)
 
 
 # ── measure_lidar validation ──────────────────────────────────────────────────
 
+def _load_measure_lidar():
+    sys.path.insert(0, 'api')
+    stub = types.ModuleType('measure_pipeline')
+    stub.measure_roof = lambda *a, **kw: {}
+    sys.modules['measure_pipeline'] = stub
+    if 'measure_lidar' in sys.modules:
+        return sys.modules['measure_lidar']
+    import measure_lidar
+    return measure_lidar
+
+
 class TestMeasureLidarValidation(unittest.TestCase):
-    """Unit-test the validation helpers in measure_lidar without network I/O."""
+    """Unit-tests for _validate_parcel_geojson and _validate_position in measure_lidar."""
 
-    def _load(self):
-        sys.path.insert(0, 'api')
-        # Stub out measure_pipeline so import doesn't fail without deps
-        import types
-        stub = types.ModuleType('measure_pipeline')
-        stub.measure_roof = lambda *a, **kw: {}
-        sys.modules['measure_pipeline'] = stub
-        import importlib
-        if 'measure_lidar' in sys.modules:
-            return sys.modules['measure_lidar']
-        import measure_lidar
-        return measure_lidar
+    @classmethod
+    def setUpClass(cls):
+        cls.ml = _load_measure_lidar()
 
-    def test_invalid_lat_nan(self):
-        ml = self._load()
-        with self.assertRaises(ValueError):
-            ml._validate_parcel_geojson({'type': 'Point', 'coordinates': []})
+    def _poly(self, ring):
+        return {'type': 'Polygon', 'coordinates': [ring]}
 
-    def test_invalid_parcel_type_rejected(self):
-        ml = self._load()
-        with self.assertRaises(ValueError):
-            ml._validate_parcel_geojson({'type': 'LineString', 'coordinates': [[0, 0], [1, 1]]})
+    def _near_cr_ring(self):
+        """A small closed ring near Cedar Rapids (lon≈-91.6, lat≈41.9)."""
+        return [
+            [-91.601, 41.901], [-91.600, 41.901],
+            [-91.600, 41.900], [-91.601, 41.900],
+            [-91.601, 41.901],
+        ]
+
+    # ── body-level
+    def test_json_array_body_rejected(self):
+        with self.assertRaises(Exception):
+            self.ml._validate_parcel_geojson([1, 2, 3])
 
     def test_null_parcel_accepted(self):
-        ml = self._load()
-        self.assertTrue(ml._validate_parcel_geojson(None))
+        self.ml._validate_parcel_geojson(None)  # must not raise
 
-    def test_valid_polygon_accepted(self):
-        ml = self._load()
-        ring = [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]
-        self.assertTrue(ml._validate_parcel_geojson({'type': 'Polygon', 'coordinates': [ring]}))
-
-    def test_oversized_ring_rejected(self):
-        ml = self._load()
-        big_ring = [[i, 0] for i in range(ml.MAX_PARCEL_COORDS + 10)]
+    # ── geometry type
+    def test_point_type_rejected(self):
         with self.assertRaises(ValueError):
-            ml._validate_parcel_geojson({'type': 'Polygon', 'coordinates': [big_ring]})
+            self.ml._validate_parcel_geojson({'type': 'Point', 'coordinates': [-91.6, 41.9]})
+
+    def test_linestring_type_rejected(self):
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson({'type': 'LineString', 'coordinates': [[-91.6, 41.9], [-91.5, 41.8]]})
+
+    def test_feature_type_rejected(self):
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson({'type': 'Feature', 'geometry': None})
+
+    # ── ring structure
+    def test_unclosed_ring_rejected(self):
+        ring = [[-91.601, 41.901], [-91.600, 41.901], [-91.600, 41.900], [-91.601, 41.900]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_too_few_positions_rejected(self):
+        ring = [[-91.601, 41.901], [-91.600, 41.901], [-91.601, 41.901]]  # only 3
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    # ── coordinate values
+    def test_nonnumeric_coord_rejected(self):
+        ring = [[-91.601, "41.9"], [-91.600, 41.901], [-91.600, 41.900], [-91.601, 41.901]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_boolean_coord_rejected(self):
+        ring = [[True, 41.901], [-91.600, 41.901], [-91.600, 41.900], [True, 41.901]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_null_coord_rejected(self):
+        ring = [[None, 41.901], [-91.600, 41.901], [-91.600, 41.900], [None, 41.901]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_nan_coord_rejected(self):
+        import math
+        ring = [[math.nan, 41.901], [-91.600, 41.901], [-91.600, 41.900], [math.nan, 41.901]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_inf_coord_rejected(self):
+        import math
+        ring = [[math.inf, 41.901], [-91.600, 41.901], [-91.600, 41.900], [math.inf, 41.901]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_out_of_range_longitude_rejected(self):
+        ring = [[200.0, 41.901], [-91.600, 41.901], [-91.600, 41.900], [200.0, 41.901]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_out_of_range_latitude_rejected(self):
+        ring = [[-91.601, 95.0], [-91.600, 41.901], [-91.600, 41.900], [-91.601, 95.0]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    # ── size limits
+    def test_too_many_total_coords_rejected(self):
+        # Build a ring with MAX_PARCEL_COORDS_TOTAL + 10 positions, all valid coords near Cedar Rapids
+        n = self.ml.MAX_PARCEL_COORDS_TOTAL + 10
+        ring = [[-91.601 + i * 0.000001, 41.900] for i in range(n)]
+        ring.append(ring[0])  # close the ring
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring))
+
+    def test_too_many_polygons_rejected(self):
+        ring = self._near_cr_ring()
+        coords = [[[ring]] * (self.ml.MAX_POLYGONS + 1)]
+        # Build a MultiPolygon with too many polygons
+        geojson = {'type': 'MultiPolygon', 'coordinates': [[ring]] * (self.ml.MAX_POLYGONS + 1)}
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(geojson)
+
+    # ── centroid/diagonal checks (require request lat/lon)
+    def test_valid_nearby_polygon_accepted(self):
+        ring = self._near_cr_ring()
+        # Should not raise — small residential parcel near Cedar Rapids
+        self.ml._validate_parcel_geojson(self._poly(ring), request_lat=41.9, request_lon=-91.6)
+
+    def test_parcel_diagonal_too_large_rejected(self):
+        # A polygon spanning ~1 degree of longitude ≈ ~80 km — way over 500m limit
+        ring = [[-92.0, 41.9], [-91.0, 41.9], [-91.0, 41.91], [-92.0, 41.91], [-92.0, 41.9]]
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring), request_lat=41.9, request_lon=-91.5)
+
+    def test_parcel_centroid_too_far_rejected(self):
+        # Parcel centroid near Iowa City (~30 km from Cedar Rapids)
+        ring = [[-91.535, 41.660], [-91.534, 41.660], [-91.534, 41.659], [-91.535, 41.659], [-91.535, 41.660]]
+        # Request lat/lon is Cedar Rapids — centroid is >250m away
+        with self.assertRaises(ValueError):
+            self.ml._validate_parcel_geojson(self._poly(ring), request_lat=41.9, request_lon=-91.6)
+
+    def test_valid_nearby_multipolygon_accepted(self):
+        ring = self._near_cr_ring()
+        geojson = {'type': 'MultiPolygon', 'coordinates': [[ring]]}
+        self.ml._validate_parcel_geojson(geojson, request_lat=41.9, request_lon=-91.6)
 
 
 # ── measure.js address validation (static checks via syntax) ─────────────────
@@ -413,6 +554,10 @@ class TestMeasureJsStatic(unittest.TestCase):
     def test_no_lidar_label_on_fallback(self):
         # Fallback comment must NOT call regrid/OSM results LiDAR
         self.assertIn('NOT LiDAR', self.src)
+
+    def test_cors_wildcard_not_in_measure_js(self):
+        # measure.js should not set Access-Control-Allow-Origin: * (Python handler does CORS)
+        self.assertNotIn("Access-Control-Allow-Origin", self.src)
 
 
 if __name__ == '__main__':

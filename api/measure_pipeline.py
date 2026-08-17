@@ -35,6 +35,8 @@ FROM_3857 = pyproj.Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True
 # Resource router. Bounds pulled live from each resource's own ept.json
 # (see MEASUREMENT_SPEC.md sec 1). Fixed 2-resource service area matches
 # the brief -- don't build a general resource-discovery system for this.
+MAX_CROP_RADIUS_M = 300.0  # hard cap regardless of parcel size — prevents unbounded EPT downloads
+
 RESOURCES = {
     "IA_Eastern_1_2019": {
         "bounds_3857": (-10329508, 4918627, -10031492, 5216643),
@@ -79,6 +81,10 @@ def isolate_roof_points(resource: str, lat: float, lon: float, parcel_geojson: d
         minx, miny, maxx, maxy = parcel_3857.bounds
         diag = ((maxx - minx) ** 2 + (maxy - miny) ** 2) ** 0.5
         radius = max(35.0, diag / 2 + 15)  # +15m margin for eaves/overhang past the legal line
+        if radius > MAX_CROP_RADIUS_M:
+            raise ValueError(
+                f"Parcel extent too large for safe EPT crop (radius {radius:.0f}m exceeds {MAX_CROP_RADIUS_M:.0f}m limit)"
+            )
 
         xyz, cls, center, _ = crop_property(resource, clon, clat, half_extent_m=radius)
         hag = height_above_ground(xyz, cls)

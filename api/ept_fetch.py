@@ -170,11 +170,20 @@ def crop_property(resource: str, lon: float, lat: float, half_extent_m: float = 
     xyz = np.concatenate(all_xyz, axis=0)
     cls = np.concatenate(all_cls, axis=0)
 
+    if len(xyz) != len(cls):
+        raise LidarCoverageError("Point cloud integrity error — xyz/classification length mismatch")
+
     mask = (
         (xyz[:, 0] >= target_bbox[0]) & (xyz[:, 0] <= target_bbox[3]) &
         (xyz[:, 1] >= target_bbox[1]) & (xyz[:, 1] <= target_bbox[4])
     )
-    return xyz[mask], cls[mask], (cx, cy), node_keys
+    xyz_cropped = xyz[mask]
+    cls_cropped = cls[mask]
+
+    if len(xyz_cropped) == 0:
+        raise LidarCoverageError("No points within crop boundary — location is at coverage edge or outside coverage area")
+
+    return xyz_cropped, cls_cropped, (cx, cy), node_keys
 
 
 if __name__ == "__main__":
