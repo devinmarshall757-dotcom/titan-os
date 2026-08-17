@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
       <tr><td style="padding:6px 0;color:#888;">Siding Area</td><td style="padding:6px 0;">${measurement.siding_area?.toLocaleString()} sq ft</td></tr>
       <tr><td style="padding:6px 0;color:#888;">Roof Complexity</td><td style="padding:6px 0;">${measurement.complexity}</td></tr>
       <tr><td style="padding:6px 0;color:#888;">Pitch Estimate</td><td style="padding:6px 0;">${measurement.estimated_pitch}</td></tr>
-      <tr><td style="padding:6px 0;color:#888;">Confidence</td><td style="padding:6px 0;">${measurement.confidence}%</td></tr>
+      <tr><td style="padding:6px 0;color:#888;">Data quality</td><td style="padding:6px 0;">${measurement.confidence >= 80 ? 'Higher' : measurement.confidence >= 60 ? 'Standard' : 'Limited'} · field verification required</td></tr>
     </table>` : '';
 
   const homeownerMeasureHtml = measurement ? `

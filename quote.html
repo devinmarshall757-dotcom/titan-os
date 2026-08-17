@@ -1037,8 +1037,8 @@ async function fetchMeasurements() {
       </div>`).join('');
 
     const srcLabel = data.gis_source === 'usgs_3dep'
-      ? `USGS 3DEP LiDAR · ${data.lidar_date || '2019 scan'}`
-      : 'US Census & OpenStreetMap property data';
+      ? 'Titan LiDAR elevation analysis'
+      : 'Titan property-data analysis';
     document.getElementById('measureSource').textContent = `Sourced from ${srcLabel} · ${Math.round(data.processing_time_ms / 100) / 10}s`;
     document.getElementById('addrContinueBtn').style.display = '';
 
@@ -1214,7 +1214,7 @@ async function submitQuote() {
       `Gutter length: ${propertyMeasurement.gutter_length?.toLocaleString()} ft`,
       `Siding area: ${propertyMeasurement.siding_area?.toLocaleString()} sq ft`,
       `Complexity: ${propertyMeasurement.complexity}`,
-      `Confidence: ${propertyMeasurement.confidence}%`
+      `Data quality indicator: ${propertyMeasurement.confidence >= 80 ? 'Higher' : propertyMeasurement.confidence >= 60 ? 'Standard' : 'Limited'} (field verification required)`
     ] : [];
 
     await fetch('/api/contact', {
