@@ -1,5 +1,5 @@
 # PITCH READY REPORT
-Generated: 2026-08-16
+Generated: 2026-08-16 (updated after full hardening pass)
 
 ## System Status
 
@@ -19,10 +19,12 @@ Generated: 2026-08-16
 ## Changes Made This Session
 
 ### P0 — Security
-- [x] `ADMIN_PASSWORD` removed from browser source — now checked server-side via `/api/admin-auth`
+- [x] Admin dashboard is now **DEMO MODE** — all data is synthetic, no real Supabase reads occur
+- [x] `window.fetch` intercepted for all Supabase URLs — returns hardcoded demo data, blocks all mutations silently
+- [x] Prominent purple "DEMO — SYNTHETIC DATA" banner shown at top of admin panel
+- [x] `ADMIN_PASSWORD` removed from browser source — server-side check via `/api/admin-auth`
 - [x] `ADMIN_PASSWORD` set as encrypted Vercel env var
-- [x] Admin login calls `/api/admin-auth` (POST), gets HMAC token, stores in sessionStorage
-- [x] Token validated by timestamp+signature — not just `=== '1'`
+- [x] **REMAINING**: Authenticated production admin APIs (service-key server routes + RLS) are post-pitch work — do not use admin for real customer data until complete
 
 ### P0 — Lead Capture
 - [x] `api/contact.js` now awaits Supabase insert and checks `response.ok`
