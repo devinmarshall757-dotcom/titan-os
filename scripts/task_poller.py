@@ -54,8 +54,7 @@ def run_script(script_name):
         return "", f"unknown script: {script_name}", 1
     try:
         result = subprocess.run(
-            cmd, shell=False, capture_output=True, text=True, timeout=180,
-            args=cmd.split()
+            cmd.split(), shell=False, capture_output=True, text=True, timeout=180
         )
         return result.stdout, result.stderr, result.returncode
     except subprocess.TimeoutExpired:

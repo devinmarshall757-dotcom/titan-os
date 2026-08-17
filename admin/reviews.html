@@ -426,7 +426,6 @@
 </div>
 
 <script>
-  const ADMIN_PASSWORD = 'titan';
   const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
 
@@ -449,13 +448,21 @@
     return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
-  function login() {
-    if (document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
-      sessionStorage.setItem('titan_admin', '1');
+  async function login() {
+    const pw = document.getElementById('passwordInput').value;
+    try {
+      const res = await fetch('/api/admin-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      if (!res.ok) throw new Error('bad');
+      const { token } = await res.json();
+      sessionStorage.setItem('titan_admin', token);
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
       switchTab('feed');
-    } else {
+    } catch {
       document.getElementById('loginError').style.display = 'block';
     }
   }
@@ -1084,7 +1091,7 @@
     else alert('Could not save note.');
   }
 
-  if (sessionStorage.getItem('titan_admin') === '1') {
+  if (sessionStorage.getItem('titan_admin') && sessionStorage.getItem('titan_admin').includes('.')) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     switchTab('feed');

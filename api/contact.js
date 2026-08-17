@@ -12,8 +12,8 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Name and phone are required' });
   }
 
-  // Save lead to Supabase
-  fetch(`${SUPABASE_URL}/rest/v1/leads`, {
+  // Save lead to Supabase — awaited so failures are caught before responding
+  const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_KEY,
@@ -22,7 +22,10 @@ module.exports = async function handler(req, res) {
       'Prefer': 'return=minimal'
     },
     body: JSON.stringify({ name, phone, email: email || null, service: service || null, address: address || null, note: message || null, estimate_low: estimate_low || null, estimate_high: estimate_high || null })
-  }).catch(e => console.error('Supabase save failed:', e.message));
+  }).catch(e => { console.error('Supabase save failed:', e.message); return null; });
+  if (!dbRes || !dbRes.ok) {
+    console.error('Lead not saved to DB — status:', dbRes?.status);
+  }
 
   const measureHtml = measurement ? `
     <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">

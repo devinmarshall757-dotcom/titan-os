@@ -6,6 +6,7 @@
   ],
   "rewrites": [
     { "source": "/api/contact", "destination": "/api/contact.js" },
+    { "source": "/api/admin-auth", "destination": "/api/admin-auth.js" },
     { "source": "/api/measure_lidar", "destination": "/api/measure_lidar.py" },
     { "source": "/((?!admin|pitch).*)", "destination": "/index.html" }
   ]

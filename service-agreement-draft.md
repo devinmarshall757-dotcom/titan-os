@@ -39,7 +39,7 @@ Service Provider agrees to build, host, and maintain the Titan Operating System 
 - Titan OS is hosted on Vercel (cloud) and accessible at Client's domain (titanconsultingcontracting.com)
 - Backend data runs on a dedicated Supabase (PostgreSQL) database
 - Data scrapers run on a dedicated server maintained by Service Provider
-- Client data is not shared with any third party
+- Client data is processed through the following subprocessors as required to deliver the service: Vercel (hosting), Supabase (database), Resend (email delivery), Regrid (parcel data), USGS (LiDAR elevation data), NOAA (weather alerts), OpenStreetMap/Nominatim (geocoding). Client data is not sold or used outside of service delivery.
 - No OpenAI or shared AI infrastructure — dedicated server for Client's business
 
 ---
@@ -96,7 +96,7 @@ Service Provider agrees to build, host, and maintain the Titan Operating System 
 
 ## 8. LIMITATIONS
 
-- Measurement confidence: USGS LiDAR data provides 60–85% accuracy. Measurements are estimates and should be verified before finalizing job quotes.
+- Measurement confidence indicator: USGS LiDAR data returns an internally calculated confidence indicator (not a validated accuracy percentage). Measurements are estimates based on available aerial and parcel data and must be verified in the field before finalizing any job quote or contract. Service Provider makes no warranty as to measurement precision.
 - Permit data depends on municipal reporting schedules. Cedar Rapids data is pulled daily. Expanded county coverage depends on availability of public permit portals.
 - Storm lead scoring is automated based on NOAA alert severity. Client is responsible for qualifying leads before outreach.
 - AI Follow-Up Agent drafts are for Client review only — Client approves all outreach before it sends. Service Provider is not liable for outreach content once Client approves and sends.
