@@ -1,10 +1,14 @@
 const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
 
+const { applyRateLimit } = require('./_rate-limit');
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  if (await applyRateLimit(req, res, 'contact')) return;
 
   const { name, phone, email, service, message, measurement, address, estimate_low, estimate_high } = req.body;
 

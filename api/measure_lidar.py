@@ -7,6 +7,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 from measure_pipeline import measure_roof
+from _rate_limit import apply_rate_limit
 
 MAX_BODY_BYTES = 32_768      # 32 KB
 MAX_PARCEL_COORDS_TOTAL = 2000
@@ -136,6 +137,9 @@ def _cors_origin(request_origin: str) -> str:
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
+            if apply_rate_limit(self, 'measure_lidar'):
+                return
+
             content_length_header = self.headers.get('Content-Length')
             if content_length_header is None:
                 self._respond(411, {'error': 'Content-Length required'})

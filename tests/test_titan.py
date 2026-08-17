@@ -560,5 +560,332 @@ class TestMeasureJsStatic(unittest.TestCase):
         self.assertNotIn("Access-Control-Allow-Origin", self.src)
 
 
+# ── rate limiter static checks ────────────────────────────────────────────────
+
+class TestRateLimiterStatic(unittest.TestCase):
+    """Verify key security properties of _rate-limit.js via static analysis."""
+
+    def setUp(self):
+        with open('api/_rate-limit.js', 'r', encoding='utf-8') as f:
+            self.src = f.read()
+
+    def test_sliding_window_zadd_present(self):
+        self.assertIn('ZADD', self.src)
+
+    def test_sliding_window_zremrangebyscore_present(self):
+        self.assertIn('ZREMRANGEBYSCORE', self.src)
+
+    def test_sliding_window_zcard_present(self):
+        self.assertIn('ZCARD', self.src)
+
+    def test_retry_after_header_set(self):
+        self.assertIn('Retry-After', self.src)
+
+    def test_http_429_returned(self):
+        self.assertIn('429', self.src)
+
+    def test_ip_hashed_not_logged_raw(self):
+        # Must hash IPs before use — sha256 or createHash present
+        self.assertTrue('sha256' in self.src or 'createHash' in self.src,
+                        "IP hashing must use SHA-256")
+
+    def test_fail_closed_in_production(self):
+        # Production must fail closed, not fail open, when Upstash unreachable
+        self.assertIn('VERCEL_ENV', self.src)
+        self.assertTrue(
+            'production' in self.src and ('429' in self.src or '503' in self.src),
+            "Must fail closed (429/503) in production"
+        )
+
+    def test_endpoint_specific_limits_configurable(self):
+        # Per-endpoint env vars for limits
+        self.assertIn('RATE_LIMIT_MEASURE', self.src)
+        self.assertIn('RATE_LIMIT_CONTACT', self.src)
+        self.assertIn('RATE_LIMIT_ADMIN_AUTH', self.src)
+
+    def test_no_in_memory_map_as_primary_store(self):
+        # In-memory Map must only be the dev fallback, not the primary path
+        # It should be inside a fallback/dev branch, not at module level
+        lines = self.src.splitlines()
+        map_line_idx = next((i for i, l in enumerate(lines) if 'new Map()' in l), None)
+        if map_line_idx is not None:
+            # The Map must appear after a dev/fallback guard
+            context = '\n'.join(lines[max(0, map_line_idx - 20):map_line_idx + 1])
+            self.assertTrue(
+                'fallback' in context.lower() or 'dev' in context.lower() or 'warn' in context.lower(),
+                "In-memory Map must only appear in dev fallback path"
+            )
+
+
+class TestRateLimiterPythonStatic(unittest.TestCase):
+    """Verify _rate_limit.py mirrors the JS limiter's key properties."""
+
+    def setUp(self):
+        with open('api/_rate_limit.py', 'r', encoding='utf-8') as f:
+            self.src = f.read()
+
+    def test_upstash_rest_url_env_var(self):
+        self.assertIn('UPSTASH_REDIS_REST_URL', self.src)
+
+    def test_upstash_rest_token_env_var(self):
+        self.assertIn('UPSTASH_REDIS_REST_TOKEN', self.src)
+
+    def test_retry_after_header_set(self):
+        self.assertIn('Retry-After', self.src)
+
+    def test_http_429_returned(self):
+        self.assertIn('429', self.src)
+
+    def test_no_shell_true(self):
+        self.assertNotIn('shell=True', self.src)
+
+    def test_fail_closed_guard_present(self):
+        # Must check for env vars and fail closed in production
+        self.assertTrue('VERCEL_ENV' in self.src or 'production' in self.src,
+                        "Python rate limiter must reference production env guard")
+
+
+# ── admin auth static checks ──────────────────────────────────────────────────
+
+class TestAdminAuthStatic(unittest.TestCase):
+    """Verify admin-auth.js security properties via static analysis."""
+
+    def setUp(self):
+        with open('api/admin-auth.js', 'r', encoding='utf-8') as f:
+            self.src = f.read()
+
+    def test_no_service_key_fallback(self):
+        # Must not fall back to SUPABASE_SERVICE_KEY as token secret
+        self.assertNotIn('SUPABASE_SERVICE_KEY', self.src,
+                         "admin-auth.js must not reference SUPABASE_SERVICE_KEY")
+
+    def test_admin_token_secret_required(self):
+        self.assertIn('ADMIN_TOKEN_SECRET', self.src)
+
+    def test_timing_safe_equal_used(self):
+        self.assertIn('timingSafeEqual', self.src)
+
+    def test_httponly_cookie_set(self):
+        self.assertIn('HttpOnly', self.src)
+
+    def test_samesite_strict_set(self):
+        self.assertIn('SameSite=Strict', self.src)
+
+    def test_csrf_token_cookie_set(self):
+        self.assertIn('csrf_token', self.src)
+
+    def test_fails_503_when_secret_missing(self):
+        # Must return error when ADMIN_TOKEN_SECRET not configured
+        self.assertTrue('503' in self.src or 'misconfigured' in self.src.lower(),
+                        "Must return 503 when ADMIN_TOKEN_SECRET not set")
+
+    def test_password_not_in_source(self):
+        # Admin password must come from env var only — check for common hardcoded literals
+        self.assertNotIn("password123", self.src)
+        self.assertNotIn("admin123", self.src)
+        self.assertNotIn("titan2026", self.src)
+        # Must reference env var, not assign a literal string to the password constant
+        import re
+        # Matches: const ADMIN_PASSWORD = "..." or = '...' (hardcoded literal, not env var)
+        hardcoded = re.search(r'ADMIN_PASSWORD\s*=\s*["\']', self.src)
+        self.assertIsNone(hardcoded, "ADMIN_PASSWORD must not be assigned a hardcoded string literal")
+
+
+class TestAdminVerifyStatic(unittest.TestCase):
+    """Verify _admin-verify.js shared auth helper."""
+
+    def setUp(self):
+        with open('api/_admin-verify.js', 'r', encoding='utf-8') as f:
+            self.src = f.read()
+
+    def test_production_mode_from_server_env_only(self):
+        # Production mode must read ADMIN_PRODUCTION_MODE from env, not from request
+        self.assertIn('ADMIN_PRODUCTION_MODE', self.src)
+        self.assertNotIn('req.query.production', self.src)
+        self.assertNotIn('req.body.production', self.src)
+
+    def test_token_secret_no_supabase_fallback(self):
+        self.assertNotIn('SUPABASE_SERVICE_KEY', self.src)
+
+    def test_require_admin_exported(self):
+        self.assertIn('requireAdmin', self.src)
+
+    def test_require_csrf_exported(self):
+        self.assertIn('requireCsrf', self.src)
+
+    def test_csrf_reads_header(self):
+        self.assertIn('X-CSRF-Token', self.src)
+
+    def test_hmac_or_jwt_verify(self):
+        self.assertTrue('createHmac' in self.src or 'verify' in self.src,
+                        "Token must be verified with HMAC or JWT")
+
+
+class TestAdminLogoutStatic(unittest.TestCase):
+    def setUp(self):
+        with open('api/admin-logout.js', 'r', encoding='utf-8') as f:
+            self.src = f.read()
+
+    def test_clears_admin_token_cookie(self):
+        self.assertIn('admin_token=;', self.src)
+
+    def test_clears_csrf_cookie(self):
+        self.assertIn('csrf_token=;', self.src)
+
+    def test_max_age_zero(self):
+        self.assertIn('Max-Age=0', self.src)
+
+
+# ── admin routes static checks ────────────────────────────────────────────────
+
+class TestAdminRoutesStatic(unittest.TestCase):
+    """Every admin route must require authentication; mutations must check CSRF."""
+
+    ROUTES = [
+        'api/admin/leads.js',
+        'api/admin/permits.js',
+        'api/admin/storm.js',
+        'api/admin/measurements.js',
+        'api/admin/reviews.js',
+        'api/admin/jobs.js',
+        'api/admin/job-activity.js',
+    ]
+
+    MUTATION_ROUTES = [
+        'api/admin/reviews.js',
+        'api/admin/jobs.js',
+        'api/admin/job-activity.js',
+    ]
+
+    ALLOWLISTED_ROUTES = {
+        'api/admin/reviews.js':     ('ALLOWED_PATCH_FIELDS', 'approved'),
+        'api/admin/jobs.js':        ('ALLOWED_JOB_FIELDS', 'sanitizeJobFields'),
+    }
+
+    def _read(self, path):
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+
+    def test_all_routes_call_require_admin(self):
+        for route in self.ROUTES:
+            with self.subTest(route=route):
+                src = self._read(route)
+                self.assertIn('requireAdmin', src, f"{route} must call requireAdmin()")
+
+    def test_mutation_routes_call_require_csrf(self):
+        for route in self.MUTATION_ROUTES:
+            with self.subTest(route=route):
+                src = self._read(route)
+                self.assertIn('requireCsrf', src, f"{route} must call requireCsrf() on mutations")
+
+    def test_mutation_routes_no_arbitrary_table(self):
+        for route in self.MUTATION_ROUTES:
+            with self.subTest(route=route):
+                src = self._read(route)
+                # Must not accept table name from request body
+                self.assertNotIn('req.body.table', src)
+                self.assertNotIn('req.query.table', src)
+
+    def test_allowlisted_routes_have_allowlist(self):
+        for route, (allowlist_name, _) in self.ALLOWLISTED_ROUTES.items():
+            with self.subTest(route=route):
+                src = self._read(route)
+                self.assertIn(allowlist_name, src,
+                              f"{route} must define {allowlist_name} for mutation field allowlist")
+
+    def test_no_service_key_in_admin_routes(self):
+        for route in self.ROUTES:
+            with self.subTest(route=route):
+                src = self._read(route)
+                # Must not directly embed or hardcode the service key value
+                self.assertNotIn('eyJ', src, f"{route} must not contain hardcoded JWT tokens")
+
+
+# ── browser assets security ───────────────────────────────────────────────────
+
+class TestBrowserAssetSecurity(unittest.TestCase):
+    """Verify no sensitive credentials end up in browser-served HTML files."""
+
+    ASSETS = ['index.html', 'pitch.html', 'quote.html', 'admin/reviews.html']
+    # Match full 3-part JWT (header.payload.signature) — not base64 image data
+    JWT_PAT = __import__('re').compile(r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+')
+
+    def test_no_jwt_in_browser_assets(self):
+        for asset in self.ASSETS:
+            try:
+                with open(asset, 'r', encoding='utf-8', errors='replace') as f:
+                    content = f.read()
+            except FileNotFoundError:
+                continue
+            matches = self.JWT_PAT.findall(content)
+            with self.subTest(asset=asset):
+                self.assertEqual(matches, [],
+                                 f"{asset} contains {len(matches)} JWT token(s) — verify none is the service key")
+
+    def test_no_supabase_service_key_env_name_in_js_bundles(self):
+        # The string SUPABASE_SERVICE_KEY must not appear in any browser HTML
+        for asset in self.ASSETS:
+            try:
+                with open(asset, 'r', encoding='utf-8', errors='replace') as f:
+                    content = f.read()
+            except FileNotFoundError:
+                continue
+            with self.subTest(asset=asset):
+                self.assertNotIn('SUPABASE_SERVICE_KEY', content,
+                                 f"{asset} must not reference SUPABASE_SERVICE_KEY")
+
+    def test_no_cors_wildcard_in_js_files(self):
+        import os, glob
+        for path in glob.glob('api/*.js') + glob.glob('api/**/*.js'):
+            with open(path, 'r', encoding='utf-8', errors='replace') as f:
+                content = f.read()
+            with self.subTest(path=path):
+                self.assertNotIn("Access-Control-Allow-Origin': '*'", content)
+                self.assertNotIn('Access-Control-Allow-Origin: *', content)
+
+
+# ── production mode server-side enforcement ───────────────────────────────────
+
+class TestProductionModeEnforcement(unittest.TestCase):
+    """Verify that production mode can only be set from server env vars."""
+
+    def setUp(self):
+        with open('admin/reviews.html', 'r', encoding='utf-8') as f:
+            self.html = f.read()
+
+    def test_production_mode_fetched_from_server(self):
+        # Browser must fetch /api/admin/config to determine mode
+        self.assertIn('/api/admin/config', self.html)
+
+    def test_no_localstorage_production_mode(self):
+        self.assertNotIn("localStorage.getItem('productionMode')", self.html)
+        self.assertNotIn("localStorage.setItem('productionMode'", self.html)
+
+    def test_no_queryparam_production_mode(self):
+        self.assertNotIn('URLSearchParams', self.html.split('/api/admin/config')[0])
+
+    def test_demo_banner_present(self):
+        self.assertIn('demoBanner', self.html)
+
+    def test_admin_api_helper_uses_csrf_header(self):
+        self.assertIn('X-CSRF-Token', self.html)
+
+    def test_logout_calls_server_endpoint(self):
+        self.assertIn('/api/admin-logout', self.html)
+
+    def test_session_storage_not_used_for_auth_in_mutations(self):
+        # sessionStorage token should not be passed as Authorization header to admin routes
+        # (auth is now via HttpOnly cookie — server verifies)
+        # Check that adminApi() does not add an Authorization header
+        idx = self.html.find('function adminApi(')
+        if idx == -1:
+            idx = self.html.find('async function adminApi(')
+        self.assertGreater(idx, 0, "adminApi() helper not found")
+        # Extract up to 800 chars after the function start to inspect its body
+        snippet = self.html[idx:idx + 800]
+        self.assertNotIn("Authorization", snippet,
+                         "adminApi() must not send Authorization header (auth is via HttpOnly cookie)")
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

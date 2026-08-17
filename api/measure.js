@@ -243,8 +243,14 @@ async function saveCache(row) {
   }).catch(() => {}); // cache write failures are non-fatal
 }
 
+import { createRequire } from 'module';
+const _require = createRequire(import.meta.url);
+const { applyRateLimit } = _require('./_rate-limit.js');
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  if (await applyRateLimit(req, res, 'measure')) return;
 
   const rawAddress = req.body?.address;
   if (typeof rawAddress !== 'string') return res.status(400).json({ error: 'Address required' });
