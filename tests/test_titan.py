@@ -277,10 +277,19 @@ class TestEptFetch(unittest.TestCase):
         sys.path.insert(0, 'api')
         import types
         from unittest.mock import MagicMock
-        # Stub heavy C-extension deps not available in the test environment
-        for mod in ('laspy', 'lazrs'):
-            if mod not in sys.modules:
-                sys.modules[mod] = types.ModuleType(mod)
+        # Stub C-extension deps that may be absent in the test venv
+        for mod_name in ('laspy', 'lazrs'):
+            if mod_name not in sys.modules:
+                sys.modules[mod_name] = types.ModuleType(mod_name)
+        if 'numpy' not in sys.modules:
+            try:
+                import numpy  # noqa: F401 — use the real thing if available
+            except ImportError:
+                np_stub = MagicMock()
+                np_stub.concatenate = MagicMock(return_value=MagicMock())
+                np_stub.column_stack = MagicMock(return_value=MagicMock())
+                np_stub.asarray = MagicMock(return_value=MagicMock())
+                sys.modules['numpy'] = np_stub
         # pyproj needs a working Transformer stub
         if 'pyproj' not in sys.modules:
             pyproj_stub = types.ModuleType('pyproj')
