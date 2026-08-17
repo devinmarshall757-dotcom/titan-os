@@ -227,6 +227,9 @@
 </div>
 
 <!-- ADMIN PANEL -->
+<div id="demoBanner" style="background:#7c3aed;color:#fff;text-align:center;padding:10px 20px;font-size:13px;font-weight:600;letter-spacing:.04em;position:sticky;top:0;z-index:999;">
+  DEMO — SYNTHETIC DATA · No real leads, reviews, or customer information is displayed
+</div>
 <div id="adminPanel" style="display:none;">
   <div class="admin-header">
     <h1>Titan Admin</h1>
@@ -426,8 +429,84 @@
 </div>
 
 <script>
+  // ── DEMO MODE — all data below is synthetic, no real customer data is loaded ──
+  const DEMO_MODE = true;
   const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
+
+  const DEMO_DATA = {
+    storm_events: [
+      { id: 'd1', event_type: 'Severe Thunderstorm Warning', area_desc: 'Linn County, IA', hail_size_inches: 1.25, wind_gust_mph: null, score: 9, onset_at: new Date(Date.now()-3600000).toISOString(), expires_at: new Date(Date.now()+7200000).toISOString(), source: 'noaa_nws' },
+      { id: 'd2', event_type: 'High Wind Warning', area_desc: 'Johnson County, IA', hail_size_inches: null, wind_gust_mph: 65, score: 8, onset_at: new Date(Date.now()-86400000).toISOString(), expires_at: new Date(Date.now()-3600000).toISOString(), source: 'noaa_nws' },
+    ],
+    permits: [
+      { id: 'p1', permit_number: 'CR-2026-4821', address: '3615 Bluebird Dr SW, Cedar Rapids, IA', city: 'Cedar Rapids', permit_type: 'Residential Roofing', value: 14200, issued_date: new Date().toISOString().slice(0,10), score: 92, source: 'cedar_rapids_city' },
+      { id: 'p2', permit_number: 'CR-2026-4798', address: '1147 Cherokee Dr NW, Cedar Rapids, IA', city: 'Cedar Rapids', permit_type: 'Residential Re-Roof', value: 11500, issued_date: new Date().toISOString().slice(0,10), score: 84, source: 'cedar_rapids_city' },
+      { id: 'p3', permit_number: 'CR-2026-4774', address: '824 Elmwood Dr SE, Cedar Rapids, IA', city: 'Cedar Rapids', permit_type: 'Storm Damage Repair', value: 9800, issued_date: new Date().toISOString().slice(0,10), score: 78, source: 'cedar_rapids_city' },
+      { id: 'p4', permit_number: 'CR-2026-4763', address: '2290 Edgewood Rd SW, Cedar Rapids, IA', city: 'Cedar Rapids', permit_type: 'Residential Roofing', value: 8300, issued_date: new Date().toISOString().slice(0,10), score: 71, source: 'cedar_rapids_city' },
+    ],
+    neighborhoods: [],
+    leads: [
+      { id: 'l1', name: 'James Thornton', phone: '(319) 555-0142', email: 'jthornton@email.com', service: 'Storm Damage', address: '3412 Prairie View Dr NE, Cedar Rapids, IA', note: 'Hail damage from last week, insurance claim filed', estimate_low: 8000, estimate_high: 14000, created_at: new Date(Date.now()-7200000).toISOString() },
+      { id: 'l2', name: 'Maria Santos', phone: '(319) 555-0289', email: null, service: 'Full Replacement', address: '1822 Johnson Ave NW, Cedar Rapids, IA', note: 'Roof is 18 years old, getting multiple quotes', estimate_low: 12000, estimate_high: 18000, created_at: new Date(Date.now()-172800000).toISOString() },
+      { id: 'l3', name: 'Derek Callahan', phone: '(319) 555-0371', email: 'dcallahan@work.com', service: 'Inspection', address: null, note: null, estimate_low: null, estimate_high: null, created_at: new Date(Date.now()-259200000).toISOString() },
+    ],
+    property_measurements: [
+      { id: 'm1', address: '3412 Prairie View Dr NE, Cedar Rapids, IA', address_normalized: '3412 prairie view dr ne cedar rapids ia', roof_area_sqft: 2340, roof_squares: 26.0, estimated_stories: 1, gutter_length: 194, siding_area: 1310, complexity: 'simple', confidence: 74, found: true, measurement_method: 'lidar', created_at: new Date(Date.now()-7000000).toISOString() },
+      { id: 'm2', address: '1822 Johnson Ave NW, Cedar Rapids, IA', address_normalized: '1822 johnson ave nw cedar rapids ia', roof_area_sqft: 1980, roof_squares: 22.0, estimated_stories: 2, gutter_length: 168, siding_area: 2016, complexity: 'simple', confidence: 68, found: true, measurement_method: 'regrid_estimate', created_at: new Date(Date.now()-170000000).toISOString() },
+    ],
+    reviews_pending: [
+      { id: 'r1', name: 'Tom Bradley', email: 'tbradley@email.com', rating: 5, service: 'Storm Damage', review: 'Titan had someone out same day after the storm. Insurance process was painless and the crew was professional. Highly recommend.', approved: false, created_at: new Date(Date.now()-86400000).toISOString() },
+    ],
+    reviews_approved: [
+      { id: 'r2', name: 'Linda Marsh', email: 'lmarsh@email.com', rating: 5, service: 'Full Replacement', review: 'Best roofing company in Cedar Rapids. Fair price, clean work, done in one day.', approved: true, created_at: new Date(Date.now()-604800000).toISOString() },
+    ],
+    jobs: [
+      { id: 'j1', name: 'James Thornton', address: '3412 Prairie View Dr NE, Cedar Rapids, IA', phone: '(319) 555-0142', email: 'jthornton@email.com', stage: 'estimate', value: 11200, source: 'permit', notes: 'Storm damage claim in progress', created_at: new Date(Date.now()-86400000).toISOString(), updated_at: new Date().toISOString() },
+      { id: 'j2', name: 'Patricia Holmes', address: '612 Oak Hill Rd SW, Cedar Rapids, IA', phone: '(319) 555-0514', email: null, stage: 'signed', value: 15800, source: 'referral', notes: 'Full replacement, GAF Timberline HDZ', created_at: new Date(Date.now()-604800000).toISOString(), updated_at: new Date().toISOString() },
+      { id: 'j3', name: 'Carlos Rivera', address: '208 Fairview Ct NE, Cedar Rapids, IA', phone: '(319) 555-0623', email: 'crivera@email.com', stage: 'lead', value: null, source: 'storm', notes: null, created_at: new Date(Date.now()-3600000).toISOString(), updated_at: new Date().toISOString() },
+      { id: 'j4', name: 'Susan Park', address: '1490 Hillcrest Dr NW, Cedar Rapids, IA', phone: '(319) 555-0781', email: null, stage: 'production', value: 9400, source: 'permit', notes: 'In production — crew scheduled', created_at: new Date(Date.now()-1209600000).toISOString(), updated_at: new Date().toISOString() },
+      { id: 'j5', name: 'Wayne Fuller', address: '3308 Pioneer Ave SE, Cedar Rapids, IA', phone: '(319) 555-0912', email: 'wfuller@email.com', stage: 'collected', value: 13600, source: 'referral', notes: 'Collected. 5-star review requested.', created_at: new Date(Date.now()-2592000000).toISOString(), updated_at: new Date().toISOString() },
+    ],
+    job_activity: [
+      { id: 'a1', job_id: 'j1', note: 'Called homeowner — insurance adjuster scheduled for Friday.', author: 'Landon', created_at: new Date(Date.now()-43200000).toISOString() },
+      { id: 'a2', job_id: 'j1', note: 'Estimate sent via email. Waiting on adjuster report.', author: 'Landon', created_at: new Date(Date.now()-7200000).toISOString() },
+    ],
+    measurement_orders: [],
+  };
+
+  // Intercept all Supabase fetches in DEMO_MODE — return synthetic data, block mutations
+  if (DEMO_MODE) {
+    const _realFetch = window.fetch.bind(window);
+    window.fetch = function(url, opts = {}) {
+      if (typeof url === 'string' && url.includes('yfscfuyxbluidykmpjod.supabase.co')) {
+        const method = (opts.method || 'GET').toUpperCase();
+        // Block all mutations silently
+        if (['POST','PATCH','DELETE'].includes(method)) {
+          return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve([]) });
+        }
+        // Route GETs to demo data
+        const u = url.split('?')[0].split('/rest/v1/')[1] || '';
+        const table = u.split('?')[0];
+        let data = [];
+        if (table === 'storm_events') data = DEMO_DATA.storm_events;
+        else if (table === 'permits') data = DEMO_DATA.permits;
+        else if (table === 'neighborhoods') data = DEMO_DATA.neighborhoods;
+        else if (table === 'leads') data = DEMO_DATA.leads;
+        else if (table === 'property_measurements') data = DEMO_DATA.property_measurements;
+        else if (table === 'reviews') {
+          const approved = url.includes('approved=eq.true');
+          data = approved ? DEMO_DATA.reviews_approved : DEMO_DATA.reviews_pending;
+        }
+        else if (table === 'jobs') data = DEMO_DATA.jobs;
+        else if (table.startsWith('jobs?')) data = DEMO_DATA.jobs;
+        else if (table === 'job_activity') data = DEMO_DATA.job_activity.filter(a => url.includes(a.job_id));
+        else if (table === 'measurement_orders') data = DEMO_DATA.measurement_orders;
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(data) });
+      }
+      return _realFetch(url, opts);
+    };
+  }
 
   let currentTab = 'feed';
   let measFilter = 'all';

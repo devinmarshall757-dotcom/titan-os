@@ -191,7 +191,7 @@ class TestTaskPoller(unittest.TestCase):
 
 class TestPitchClaims(unittest.TestCase):
     def setUp(self):
-        with open('pitch.html', 'r') as f:
+        with open('pitch.html', 'r', encoding='utf-8') as f:
             self.html = f.read()
 
     def test_no_any_iowa_address(self):
@@ -201,6 +201,9 @@ class TestPitchClaims(unittest.TestCase):
         self.assertNotIn('60–85% accuracy', self.html)
         self.assertNotIn('60-85% accuracy', self.html)
 
+    def test_no_60_85_stat(self):
+        self.assertNotIn('60–85%', self.html)
+
     def test_no_iowa_city_permit_claim(self):
         self.assertNotIn('Iowa City + Rock Island', self.html)
 
@@ -209,6 +212,21 @@ class TestPitchClaims(unittest.TestCase):
 
     def test_no_replaces_acculynx(self):
         self.assertNotIn('Replaces AccuLynx', self.html)
+
+    def test_no_satellite_claim(self):
+        self.assertNotIn('USGS LiDAR + satellite', self.html)
+
+    def test_no_unlimited_cached(self):
+        self.assertNotIn('cached, unlimited', self.html)
+
+    def test_no_guaranteed_live_within(self):
+        self.assertNotIn('Live within 3–5 days', self.html)
+
+    def test_no_statewide_lidar(self):
+        self.assertNotIn('works statewide', self.html.lower())
+
+    def test_no_correlated_with_permits(self):
+        self.assertNotIn('correlated with permit spikes', self.html)
 
 
 if __name__ == '__main__':

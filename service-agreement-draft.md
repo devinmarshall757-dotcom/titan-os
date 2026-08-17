@@ -18,7 +18,7 @@ Service Provider agrees to build, host, and maintain the Titan Operating System 
 |---|---|---|
 | **Permit Intelligence** | Daily pull of residential roofing permits filed in Cedar Rapids, IA. Filtered and scored for outreach priority. | Live |
 | **Storm Monitoring** | 24/7 NOAA weather alert monitoring across all 99 Iowa counties. Hail, tornado, and wind events scored and surfaced as leads. | Live |
-| **LiDAR Measurements** | Automated roof measurements using USGS 3DEP satellite/LiDAR data. Returns square footage, roofing squares, pitch, and confidence score (60–85%) for any Iowa address. | Live |
+| **LiDAR Measurements** | Experimental roof measurement estimates using USGS 3DEP LiDAR data where available, with parcel/OSM-derived fallbacks. Returns square footage, roofing squares, pitch, and an internal quality indicator (not validated accuracy). Currently covers eastern Iowa (Cedar Rapids/Linn, Iowa City/Johnson, Davenport/Scott). All results require field verification before use in quotes, contracts, or material orders. | Live (limited geography) |
 | **CRM Pipeline** | Job management dashboard. Tracks leads through pipeline stages, captures insurance carrier, claim number, adjuster name, and job activity log. | Live |
 | **Lead Capture** | Web form at Client's domain that saves submissions to CRM automatically. | Live |
 | **Reviews Dashboard** | Internal dashboard for managing and tracking client reviews. | Live |

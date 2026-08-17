@@ -301,6 +301,8 @@ export default async function handler(req, res) {
         confidence_flags: lidar.confidence_flags,
         lidar_date: lidar.lidar_date,
         lidar_source: lidar.source,
+        measurement_method: 'lidar',
+        manual_verification_required: true,
         gis_source: 'usgs_3dep',
         processing_time_ms: Date.now() - start,
         found: true
@@ -322,12 +324,14 @@ export default async function handler(req, res) {
         gutter_size_bucket: null,
         stories_bucket: null,
         confidence: 30,
+        measurement_method: 'unavailable',
+        manual_verification_required: true,
         gis_source: gisSource,
         processing_time_ms: Date.now() - start,
         found: false
       };
     } else {
-      // Regrid/OSM fallback — derived stats
+      // Regrid/OSM fallback — derived stats, NOT LiDAR
       const stories = building.osmStories || 1;
       const footprintSqFt = building.areaSqFt;
       const perimeterFt = building.perimeterFt || Math.round(4 * Math.sqrt(footprintSqFt));
@@ -349,6 +353,8 @@ export default async function handler(req, res) {
         gutter_size_bucket: sqftToGutterBucket(footprintSqFt),
         stories_bucket: storiesToBucket(stories),
         confidence: regrid ? 85 : 72,
+        measurement_method: regrid ? 'regrid_estimate' : 'osm_estimate',
+        manual_verification_required: true,
         gis_source: gisSource,
         processing_time_ms: Date.now() - start,
         found: true

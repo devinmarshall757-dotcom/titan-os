@@ -686,16 +686,12 @@ h3.d { font-size: clamp(26px, 3.5vw, 44px); font-weight: 300; line-height: 1.05;
             <div style="font-size:11px;color:var(--gray);margin-top:4px;">Per measurement<br><span style="color:var(--gray2);font-size:10px;">vs $13–40 with RoofSnap</span></div>
           </div>
           <div class="card" style="padding:14px;">
-            <div style="font-size:19px;font-weight:600;color:var(--sky);">&lt;5s</div>
-            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Response time<br><span style="color:var(--gray2);font-size:10px;">vs 24hrs for ordered reports</span></div>
+            <div style="font-size:19px;font-weight:600;color:var(--sky);">Seconds</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Response time<br><span style="color:var(--gray2);font-size:10px;">vs days for ordered reports</span></div>
           </div>
           <div class="card" style="padding:14px;">
-            <div style="font-size:19px;font-weight:600;color:var(--sky);">60–85%</div>
-            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Confidence score<br><span style="color:var(--gray2);font-size:10px;">USGS LiDAR + satellite</span></div>
-          </div>
-          <div class="card" style="padding:14px;">
-            <div style="font-size:19px;font-weight:600;color:var(--sky);">∞</div>
-            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Lookups/month<br><span style="color:var(--gray2);font-size:10px;">cached, unlimited</span></div>
+            <div style="font-size:13px;font-weight:600;color:var(--sky);">Quality<br>Indicator</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Experimental estimate<br><span style="color:var(--gray2);font-size:10px;">field verification required</span></div>
           </div>
         </div>
         <div class="r d4" style="margin-top:18px;display:flex;align-items:center;gap:8px;">
@@ -753,11 +749,11 @@ h3.d { font-size: clamp(26px, 3.5vw, 44px); font-weight: 300; line-height: 1.05;
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start;">
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(29,78,216,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue-light);"><svg width="16" height="16"><use href="#icon-map"/></svg></div>
-            <div><div style="font-size:13px;font-weight:500;">Neighborhood targeting cross-county · Live within 3–5 days</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">Permit intel expanded to your target markets after payment</div></div>
+            <div><div style="font-size:13px;font-weight:500;">Neighborhood targeting cross-county <span style="font-size:10px;background:rgba(168,85,247,.15);color:#a855f7;border:1px solid rgba(168,85,247,.3);border-radius:4px;padding:1px 6px;font-weight:600;letter-spacing:.04em;">ROADMAP</span></div><div style="font-size:11px;color:var(--gray);margin-top:1px;">Permit intel expanded to your target counties — included in retainer</div></div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start;">
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#f59e0b;"><svg width="16" height="16"><use href="#icon-storm"/></svg></div>
-            <div><div style="font-size:13px;font-weight:500;">Storm monitoring · Iowa statewide · Live Now</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">NOAA alerts every 6 hours · correlated with permit spikes</div></div>
+            <div><div style="font-size:13px;font-weight:500;">Storm monitoring · Iowa statewide · Live Now</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">NOAA alerts every 6 hours · all 99 Iowa counties</div></div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start;">
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green);"><svg width="16" height="16"><use href="#icon-agent"/></svg></div>
@@ -949,7 +945,7 @@ h3.d { font-size: clamp(26px, 3.5vw, 44px); font-weight: 300; line-height: 1.05;
           </div>
           <div class="chat-body">
             <div class="msg u">How many permits came in today?</div>
-            <div class="msg a">14 permits pulled this morning from Cedar Rapids. Top lead: 3615 Bluebird Dr SW, score 92, storm zone match. 2,847 sq ft roof. Want me to draft a follow-up text?<div class="msg-ts">Titan Agent · 2 sec</div></div>
+            <div class="msg a">14 permits pulled this morning from Cedar Rapids. Top lead: 3615 Bluebird Dr SW, score 92, storm zone match. 2,847 sq ft roof. Want me to draft a follow-up text?<div class="msg-ts">Titan Agent · 2 sec · <em style="opacity:.6;">Illustrative demo data</em></div></div>
             <div class="msg u">Yes, draft the text.</div>
             <div class="msg a">"Hi, this is Landon from Titan Consulting. I noticed you recently filed a roofing permit at 3615 Bluebird Dr. We specialize in storm restoration in Cedar Rapids free same-day estimates. Open to a quick call?" <br><br><span style="color:var(--sky);font-size:12px;font-weight:500;">Approve to send →</span><div class="msg-ts">Titan Agent · 1 sec</div></div>
           </div>
@@ -1000,14 +996,14 @@ h3.d { font-size: clamp(26px, 3.5vw, 44px); font-weight: 300; line-height: 1.05;
       <div class="road-item">
         <div class="road-icon ri-blue ic" style="color:var(--sky);"><svg width="20" height="20"><use href="#icon-mobile"/></svg></div>
         <div>
-          <div class="road-title">Neighborhood Targeting Cross-County <span class="pill p-blue">Live within 3–5 days</span></div>
-          <div class="road-desc">Permit intel expanded to your target counties. Same daily scored feed, cross-county. Live within 3–5 days of payment.</div>
+          <div class="road-title">Neighborhood Targeting Cross-County <span class="pill p-purple">Roadmap</span></div>
+          <div class="road-desc">Permit intel expanded to your target counties. Same daily scored feed, cross-county. Included in retainer — delivery date confirmed at signing.</div>
         </div>
       </div>
       <div class="road-item">
         <div class="road-icon ri-purple ic" style="color:var(--purple);"><svg width="20" height="20"><use href="#icon-agent"/></svg></div>
         <div>
-          <div class="road-title">AI Follow-Up Agent <span class="pill p-blue">Live within 3–5 days</span></div>
+          <div class="road-title">AI Follow-Up Agent <span class="pill p-purple">Roadmap</span></div>
           <div class="road-desc">Lead in → agent drafts outreach text. You approve, it sends. No manual work.</div>
         </div>
       </div>

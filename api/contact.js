@@ -38,6 +38,7 @@ module.exports = async function handler(req, res) {
   }).catch(e => { console.error('Supabase save failed:', e.message); return null; });
   if (!dbRes || !dbRes.ok) {
     console.error('Lead not saved to DB — status:', dbRes?.status);
+    return res.status(500).json({ error: 'Could not save your request. Please call us directly.' });
   }
 
   const measureHtml = measurement ? `
