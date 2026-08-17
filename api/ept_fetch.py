@@ -19,6 +19,11 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+
+class LidarCoverageError(Exception):
+    """Raised when LiDAR data is unavailable or empty for a location.
+    Safe to surface publicly — contains no internal paths or upstream details."""
+
 import laspy
 import numpy as np
 import requests
@@ -148,11 +153,20 @@ def crop_property(resource: str, lon: float, lat: float, half_extent_m: float = 
     session = requests.Session()
     node_keys = find_overlapping_nodes(ept, target_bbox, session)
 
+    if not node_keys:
+        raise LidarCoverageError("No EPT nodes overlap this location — LiDAR coverage unavailable here")
+
     all_xyz, all_cls = [], []
     for key in node_keys:
-        xyz, cls = download_node(ept, key, session)
-        all_xyz.append(xyz)
-        all_cls.append(cls)
+        xyz_node, cls_node = download_node(ept, key, session)
+        if xyz_node is None or len(xyz_node) == 0:
+            continue
+        all_xyz.append(xyz_node)
+        all_cls.append(cls_node)
+
+    if not all_xyz:
+        raise LidarCoverageError("EPT nodes returned no point data for this location")
+
     xyz = np.concatenate(all_xyz, axis=0)
     cls = np.concatenate(all_cls, axis=0)
 

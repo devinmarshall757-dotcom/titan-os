@@ -246,8 +246,11 @@ async function saveCache(row) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { address } = req.body || {};
-  if (!address?.trim()) return res.status(400).json({ error: 'Address required' });
+  const rawAddress = req.body?.address;
+  if (typeof rawAddress !== 'string') return res.status(400).json({ error: 'Address required' });
+  const address = rawAddress.trim().replace(/\s+/g, ' ');
+  if (!address) return res.status(400).json({ error: 'Address required' });
+  if (address.length > 500) return res.status(400).json({ error: 'Address too long' });
 
   const start = Date.now();
 

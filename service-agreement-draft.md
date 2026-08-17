@@ -19,9 +19,9 @@ Service Provider agrees to build, host, and maintain the Titan Operating System 
 | **Permit Intelligence** | Daily pull of residential roofing permits filed in Cedar Rapids, IA. Filtered and scored for outreach priority. | Live |
 | **Storm Monitoring** | 24/7 NOAA weather alert monitoring across all 99 Iowa counties. Hail, tornado, and wind events scored and surfaced as leads. | Live |
 | **LiDAR Measurements** | Experimental roof measurement estimates using USGS 3DEP LiDAR data where available, with parcel/OSM-derived fallbacks. Returns square footage, roofing squares, pitch, and an internal quality indicator (not validated accuracy). Currently covers eastern Iowa (Cedar Rapids/Linn, Iowa City/Johnson, Davenport/Scott). All results require field verification before use in quotes, contracts, or material orders. | Live (limited geography) |
-| **CRM Pipeline** | Job management dashboard. Tracks leads through pipeline stages, captures insurance carrier, claim number, adjuster name, and job activity log. | Live |
+| **CRM Pipeline** | Job management dashboard. Tracks leads through pipeline stages, captures insurance carrier, claim number, adjuster name, and job activity log. | Demo — production activation pending authenticated admin APIs and RLS deployment |
 | **Lead Capture** | Web form at Client's domain that saves submissions to CRM automatically. | Live |
-| **Reviews Dashboard** | Internal dashboard for managing and tracking client reviews. | Live |
+| **Reviews Dashboard** | Internal dashboard for managing and tracking client reviews. | Demo — production activation pending authenticated admin APIs and RLS deployment |
 
 ### 1.2 Roadmap Items (Included in Retainer, Delivered Within 3–5 Business Days of Payment)
 
@@ -91,6 +91,19 @@ Service Provider agrees to build, host, and maintain the Titan Operating System 
 - Either party may terminate with 30 days written notice
 - Client is not responsible for payment beyond the current billing period after notice is given
 - Service Provider will keep systems live through the end of the paid period
+
+---
+
+## 7a. ADMIN INTERFACE — DEMO STATUS
+
+The current CRM Pipeline and Reviews Dashboard are implemented as a synthetic demonstration build. The admin interface at /admin displays only pre-populated synthetic data and must not be used to hold, display, or process real customer, insurance, claim, adjuster, or review information until the following acceptance requirements are met:
+
+1. Authenticated server-side admin APIs are deployed using the Supabase service-role key (server routes only — browser-side access to service-role keys is not permitted and does not satisfy this requirement).
+2. Row-Level Security (RLS) is applied to all relevant tables via the prepared migration.
+3. Anonymous access to private tables (leads, jobs, job_activity, reviews, measurements) is verified as denied by test.
+4. Read and write smoke tests pass against the production database with the new authenticated routes.
+
+Server-side password checking alone does not constitute production authentication. CRM and Reviews are considered "Live" only after all four requirements above are verified and documented.
 
 ---
 
