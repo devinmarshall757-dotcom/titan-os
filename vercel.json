@@ -8,14 +8,7 @@
     { "source": "/api/contact",             "destination": "/api/contact.js" },
     { "source": "/api/admin-auth",          "destination": "/api/admin-auth.js" },
     { "source": "/api/admin-logout",        "destination": "/api/admin-logout.js" },
-    { "source": "/api/admin/config",        "destination": "/api/admin/config.js" },
-    { "source": "/api/admin/leads",         "destination": "/api/admin/leads.js" },
-    { "source": "/api/admin/permits",       "destination": "/api/admin/permits.js" },
-    { "source": "/api/admin/storm",         "destination": "/api/admin/storm.js" },
-    { "source": "/api/admin/measurements",  "destination": "/api/admin/measurements.js" },
-    { "source": "/api/admin/reviews",       "destination": "/api/admin/reviews.js" },
-    { "source": "/api/admin/jobs",          "destination": "/api/admin/jobs.js" },
-    { "source": "/api/admin/job-activity",  "destination": "/api/admin/job-activity.js" },
+    { "source": "/api/admin/:resource",     "destination": "/api/admin.js?resource=:resource" },
     { "source": "/api/measure_lidar",       "destination": "/api/measure_lidar.py" },
     { "source": "/((?!admin|pitch).*)",     "destination": "/index.html" }
   ]
