@@ -12,25 +12,27 @@
 
 Service Provider agrees to build, host, and maintain the Titan Operating System ("Titan OS") — a custom software platform for Client's roofing contracting business. Titan OS includes the following modules:
 
-### 1.1 Systems Included (Live at Signing)
+### 1.1 Systems Included (Status at Signing)
 
 | System | Description | Status |
 |---|---|---|
 | **Permit Intelligence** | Daily pull of residential roofing permits filed in Cedar Rapids, IA. Filtered and scored for outreach priority. | Live |
-| **Storm Monitoring** | 24/7 NOAA weather alert monitoring across all 99 Iowa counties. Hail, tornado, and wind events scored and surfaced as leads. | Live |
+| **Storm Monitoring** | NOAA weather alert collector across all 99 Iowa counties. Hail, tornado, and wind events scored and surfaced as leads. Implemented — scheduled availability subject to dedicated server configuration and uptime. | Implemented |
 | **LiDAR Measurements** | Experimental roof measurement estimates using USGS 3DEP LiDAR data where available, with parcel/OSM-derived fallbacks. Returns square footage, roofing squares, pitch, and an internal quality indicator (not validated accuracy). Currently covers eastern Iowa (Cedar Rapids/Linn, Iowa City/Johnson, Davenport/Scott). All results require field verification before use in quotes, contracts, or material orders. | Live (limited geography) |
 | **CRM Pipeline** | Job management dashboard. Tracks leads through pipeline stages, captures insurance carrier, claim number, adjuster name, and job activity log. | Demo — production activation pending authenticated admin APIs and RLS deployment |
 | **Lead Capture** | Web form at Client's domain that saves submissions to CRM automatically. | Live |
 | **Reviews Dashboard** | Internal dashboard for managing and tracking client reviews. | Demo — production activation pending authenticated admin APIs and RLS deployment |
 
-### 1.2 Roadmap Items (Included in Retainer, Delivered Within 3–5 Business Days of Payment)
+### 1.2 Roadmap Items (Included in Retainer — Delivery Schedule TBD)
 
-| Feature | Description |
-|---|---|
-| **Neighborhood Targeting Cross-County** | Permit intelligence expanded to Client's target counties beyond Cedar Rapids. Same daily scored feed, cross-county. |
-| **AI Follow-Up Agent** | When a lead enters the system, the agent drafts an outreach text. Client reviews and approves before it sends. No manual drafting required. |
+| Feature | Description | Acceptance Criteria |
+|---|---|---|
+| **Neighborhood Targeting Cross-County** | Permit intelligence expanded to Client's target counties beyond Cedar Rapids. Same daily scored feed, cross-county. | Automated daily feed producing scored permit records for at least one additional county, verified by Client. |
+| **AI Follow-Up Agent** | When a lead enters the system, the agent drafts an outreach text. Client reviews and approves before it sends. No manual drafting required. | End-to-end demo: lead triggers draft, Client approves, message sends via configured channel. |
 
-> **Note:** Roadmap items are included in the base retainer. No additional charges. Timeline begins from date of first payment received.
+ > **Important — Admin Interface Status at Signing:** The CRM Pipeline and Reviews Dashboard are delivered as a functional demonstration build. The admin interface displays synthetic data only and must not hold real customer, insurance, claim, adjuster, or review data until Service Provider completes: (1) authenticated server-side admin APIs, (2) Row-Level Security deployment and verification, and (3) anonymous-access denial smoke tests. Service Provider commits to completing these steps as a priority milestone before Client begins entering real job or customer data.
+
+> **Note:** Roadmap items are included in the base retainer at no additional charge. Delivery dates for each item will be agreed in writing between the parties before work begins. No roadmap item is considered delivered until Client confirms the acceptance criteria above are met. The "3–5 business day" timeline referenced in any prior conversation is superseded by this agreement; no fixed delivery date applies unless added here in writing.
 
 ---
 
