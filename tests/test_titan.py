@@ -739,66 +739,39 @@ class TestAdminLogoutStatic(unittest.TestCase):
 # ── admin routes static checks ────────────────────────────────────────────────
 
 class TestAdminRoutesStatic(unittest.TestCase):
-    """Every admin route must require authentication; mutations must check CSRF."""
+    """The consolidated admin handler must protect every routed resource."""
 
-    ROUTES = [
-        'api/admin/leads.js',
-        'api/admin/permits.js',
-        'api/admin/storm.js',
-        'api/admin/measurements.js',
-        'api/admin/reviews.js',
-        'api/admin/jobs.js',
-        'api/admin/job-activity.js',
-    ]
-
-    MUTATION_ROUTES = [
-        'api/admin/reviews.js',
-        'api/admin/jobs.js',
-        'api/admin/job-activity.js',
-    ]
-
-    ALLOWLISTED_ROUTES = {
-        'api/admin/reviews.js':     ('ALLOWED_PATCH_FIELDS', 'approved'),
-        'api/admin/jobs.js':        ('ALLOWED_JOB_FIELDS', 'sanitizeJobFields'),
-    }
+    ROUTE_FILE = 'api/admin.js'
+    RESOURCES = ('leads', 'permits', 'storm', 'measurements', 'reviews', 'jobs', 'job-activity')
 
     def _read(self, path):
         with open(path, 'r', encoding='utf-8') as f:
             return f.read()
 
     def test_all_routes_call_require_admin(self):
-        for route in self.ROUTES:
-            with self.subTest(route=route):
-                src = self._read(route)
-                self.assertIn('requireAdmin', src, f"{route} must call requireAdmin()")
+        src = self._read(self.ROUTE_FILE)
+        self.assertGreaterEqual(src.count('requireAdmin'), len(self.RESOURCES) + 1)
+        for resource in self.RESOURCES:
+            with self.subTest(resource=resource):
+                self.assertIn(resource, src)
 
     def test_mutation_routes_call_require_csrf(self):
-        for route in self.MUTATION_ROUTES:
-            with self.subTest(route=route):
-                src = self._read(route)
-                self.assertIn('requireCsrf', src, f"{route} must call requireCsrf() on mutations")
+        src = self._read(self.ROUTE_FILE)
+        self.assertGreaterEqual(src.count('requireCsrf'), 5)
 
     def test_mutation_routes_no_arbitrary_table(self):
-        for route in self.MUTATION_ROUTES:
-            with self.subTest(route=route):
-                src = self._read(route)
-                # Must not accept table name from request body
-                self.assertNotIn('req.body.table', src)
-                self.assertNotIn('req.query.table', src)
+        src = self._read(self.ROUTE_FILE)
+        self.assertNotIn('req.body.table', src)
+        self.assertNotIn('req.query.table', src)
 
     def test_allowlisted_routes_have_allowlist(self):
-        for route, (allowlist_name, _) in self.ALLOWLISTED_ROUTES.items():
-            with self.subTest(route=route):
-                src = self._read(route)
-                self.assertIn(allowlist_name, src,
-                              f"{route} must define {allowlist_name} for mutation field allowlist")
+        src = self._read(self.ROUTE_FILE)
+        self.assertIn('ALLOWED_REVIEW_PATCH', src)
+        self.assertIn('ALLOWED_JOB_FIELDS', src)
 
     def test_no_service_key_in_admin_routes(self):
-        for route in self.ROUTES:
-            with self.subTest(route=route):
-                src = self._read(route)
-                # Must not directly embed or hardcode the service key value
-                self.assertNotIn('eyJ', src, f"{route} must not contain hardcoded JWT tokens")
+        src = self._read(self.ROUTE_FILE)
+        self.assertNotIn('eyJ', src, "admin handler must not contain hardcoded JWT tokens")
 
 
 # ── browser assets security ───────────────────────────────────────────────────
