@@ -8,131 +8,193 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy: #1a2744; --navy-dark: #111c33; --cream: #f7f5f2; --white: #fff;
-      --text: #1a1a2e; --mid: #555; --border: #e0ddd8;
-      --green: #27ae60; --red: #c0392b; --yellow: #d4860a; --blue: #1D4ED8;
-      --serif: "Plus Jakarta Sans", sans-serif; --sans: "Inter", sans-serif;
+      --bg: #070d1b;
+      --bg2: #0d1628;
+      --bg3: #132035;
+      --card: rgba(255,255,255,0.04);
+      --card-hover: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --blue: #1D4ED8;
+      --blue-light: #5ba4f5;
+      --green: #34d399;
+      --green-dim: rgba(52,211,153,0.15);
+      --yellow: #fbbf24;
+      --yellow-dim: rgba(251,191,36,0.12);
+      --red: #f87171;
+      --red-dim: rgba(248,113,113,0.12);
+      --white: #fff;
+      --gray: rgba(255,255,255,0.55);
+      --gray2: rgba(255,255,255,0.3);
+      --serif: "Plus Jakarta Sans", sans-serif;
+      --sans: "Inter", sans-serif;
     }
-    body { font-family: var(--sans); background: var(--cream); color: var(--text); min-height: 100vh; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--white); min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: radial-gradient(ellipse 60% 40% at 15% 0%, rgba(29,78,216,0.18) 0%, transparent 70%); z-index: 0; }
+    #loginScreen, #adminPanel { position: relative; z-index: 1; }
 
     /* LOGIN */
     .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .login-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 40px; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
-    .login-card h1 { font-family: var(--serif); font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
-    .login-card p { font-size: 13px; color: var(--mid); margin-bottom: 24px; }
-    .login-card input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--cream); margin-bottom: 12px; font-family: var(--sans); }
-    .login-card input:focus { border-color: var(--navy); background: white; }
+    .login-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 44px 40px; width: 100%; max-width: 380px; backdrop-filter: blur(24px); box-shadow: 0 0 0 1px rgba(29,78,216,0.12), 0 32px 64px rgba(0,0,0,0.4); }
+    .login-card h1 { font-family: var(--serif); font-size: 24px; font-weight: 800; color: var(--white); margin-bottom: 6px; letter-spacing: -0.02em; }
+    .login-card p { font-size: 13px; color: var(--gray); margin-bottom: 28px; }
+    .login-card input { width: 100%; padding: 13px 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 14px; outline: none; background: rgba(255,255,255,0.05); color: var(--white); margin-bottom: 12px; font-family: var(--sans); transition: border-color 0.15s, background 0.15s; }
+    .login-card input::placeholder { color: rgba(255,255,255,0.2); }
+    .login-card input:focus { border-color: rgba(91,164,245,0.5); background: rgba(255,255,255,0.07); }
     .login-error { color: var(--red); font-size: 13px; margin-bottom: 12px; display: none; }
-    .btn-login { width: 100%; padding: 12px; background: var(--navy); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); margin-top: 4px; }
-    .btn-login:hover { background: var(--navy-dark); }
+    .btn-login { width: 100%; padding: 14px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); margin-top: 4px; transition: opacity 0.15s; letter-spacing: 0.01em; }
+    .btn-login:hover { opacity: 0.88; }
 
     /* HEADER */
-    .admin-header { background: var(--navy); color: white; padding: 0 28px; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-    .admin-header h1 { font-family: var(--serif); font-size: 17px; font-weight: 800; }
-    .header-right { display: flex; align-items: center; gap: 6px; }
-    .tab-btn { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: var(--sans); transition: all 0.15s; white-space: nowrap; }
-    .tab-btn.active { background: rgba(255,255,255,0.28); color: white; border-color: rgba(255,255,255,0.4); }
-    .tab-btn:hover { background: rgba(255,255,255,0.2); color: white; }
-    .logout-btn { background: transparent; color: rgba(255,255,255,0.45); border: none; cursor: pointer; font-size: 12px; font-family: var(--sans); margin-left: 8px; }
-    .logout-btn:hover { color: white; }
+    .admin-header { background: rgba(7,13,27,0.88); border-bottom: 1px solid rgba(255,255,255,0.06); color: white; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(24px); }
+    .admin-header h1 { font-family: var(--serif); font-size: 16px; font-weight: 800; letter-spacing: -0.01em; color: rgba(255,255,255,0.9); }
+    .header-accent { display: flex; align-items: center; gap: 10px; }
+    .header-bar { width: 3px; height: 28px; background: var(--blue); border-radius: 2px; }
+    .header-right { display: flex; align-items: center; gap: 2px; }
+    .tab-btn { background: transparent; color: rgba(255,255,255,0.4); border: none; border-bottom: 2px solid transparent; padding: 8px 14px; border-radius: 0; cursor: pointer; font-family: var(--sans); transition: all 0.15s; white-space: nowrap; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; height: 60px; justify-content: center; }
+    .tab-btn .tab-label { font-size: 12px; font-weight: 700; }
+    .tab-btn .tab-sub { font-size: 9px; font-weight: 500; color: rgba(255,255,255,0.22); line-height: 1.2; }
+    .tab-btn.active { color: var(--blue-light); border-bottom-color: var(--blue-light); background: transparent; }
+    .tab-btn.active .tab-label { color: var(--blue-light); }
+    .tab-btn.active .tab-sub { color: rgba(91,164,245,0.55); }
+    .tab-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.04); }
+    .tab-btn:hover .tab-sub { color: rgba(255,255,255,0.35); }
+    .logout-btn { background: transparent; color: rgba(255,255,255,0.25); border: none; cursor: pointer; font-size: 12px; font-family: var(--sans); margin-left: 12px; padding: 0 4px; transition: color 0.15s; }
+    .logout-btn:hover { color: var(--white); }
 
     /* MAIN */
-    .admin-main { max-width: 940px; margin: 0 auto; padding: 28px 20px; }
+    .admin-main { max-width: 960px; margin: 0 auto; padding: 28px 20px; }
 
     /* STATS ROW */
     .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-    .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
-    .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 4px; }
-    .stat-val { font-size: 24px; font-weight: 800; color: var(--navy); font-family: var(--serif); }
-    .stat-sub { font-size: 11px; color: var(--mid); margin-top: 2px; }
+    .stat-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 18px; transition: background 0.15s; }
+    .stat-card:hover { background: var(--card-hover); }
+    .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gray2); margin-bottom: 6px; }
+    .stat-val { font-size: 26px; font-weight: 800; color: var(--white); font-family: var(--serif); line-height: 1; }
+    .stat-sub { font-size: 11px; color: var(--gray2); margin-top: 4px; }
 
     /* TOOLBAR */
-    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
-    .section-title { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--navy); }
-    .count-badge { display: inline-block; background: var(--navy); color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .section-title { font-family: var(--serif); font-size: 20px; font-weight: 800; color: var(--white); letter-spacing: -0.02em; }
+    .count-badge { display: inline-block; background: rgba(96,165,250,0.15); color: var(--blue-light); font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 10px; margin-left: 8px; vertical-align: middle; border: 1px solid rgba(96,165,250,0.25); }
     .filter-tabs { display: flex; gap: 6px; }
-    .filter-tab { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--mid); font-family: var(--sans); transition: all 0.15s; }
-    .filter-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+    .filter-tab { padding: 6px 13px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--gray); font-family: var(--sans); transition: all 0.15s; }
+    .filter-tab.active { background: rgba(29,78,216,0.2); color: var(--blue-light); border-color: rgba(96,165,250,0.3); }
+    .filter-tab:hover { background: var(--card-hover); color: var(--white); }
 
-    /* EMPTY / SHARED */
-    .empty-state { text-align: center; padding: 48px 24px; color: var(--mid); font-size: 14px; background: white; border: 1px solid var(--border); border-radius: 10px; }
+    /* EMPTY */
+    .empty-state { text-align: center; padding: 52px 24px; color: var(--gray); font-size: 14px; background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; }
 
     /* LEAD CARDS */
-    .lead-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
-    .lead-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
-    .lead-name { font-size: 15px; font-weight: 700; color: var(--navy); }
-    .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mid); background: var(--cream); padding: 3px 8px; border-radius: 4px; }
-    .tag-green { background: #e8f5e9; color: var(--green); }
-    .tag-yellow { background: #fff8e1; color: var(--yellow); }
+    .lead-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; transition: background 0.15s, border-color 0.15s; }
+    .lead-card:hover { background: var(--card-hover); border-color: var(--border2); }
+    .lead-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .lead-name { font-size: 15px; font-weight: 700; color: var(--white); }
+    .tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray2); background: rgba(255,255,255,0.07); padding: 3px 9px; border-radius: 5px; border: 1px solid var(--border); }
+    .tag-green { background: var(--green-dim); color: var(--green); border-color: rgba(52,211,153,0.2); }
+    .tag-yellow { background: var(--yellow-dim); color: var(--yellow); border-color: rgba(251,191,36,0.2); }
     .lead-range { font-size: 13px; font-weight: 700; color: var(--green); }
-    .lead-meta { font-size: 13px; color: var(--mid); line-height: 1.8; }
-    .lead-meta a { color: var(--navy); text-decoration: none; font-weight: 600; }
+    .lead-meta { font-size: 13px; color: var(--gray); line-height: 1.8; }
+    .lead-meta a { color: var(--blue-light); text-decoration: none; font-weight: 600; }
     .lead-meta a:hover { text-decoration: underline; }
-    .lead-address { font-size: 13px; color: var(--text); margin: 3px 0; font-weight: 500; }
-    .lead-note { font-size: 12px; color: #999; font-style: italic; margin-top: 3px; }
-    .lead-date { font-size: 11px; color: #bbb; margin-top: 3px; }
-    .lead-actions { display: flex; flex-direction: column; gap: 7px; min-width: 148px; }
+    .lead-address { font-size: 13px; color: rgba(255,255,255,0.75); margin: 4px 0; font-weight: 500; }
+    .lead-note { font-size: 12px; color: var(--gray2); font-style: italic; margin-top: 4px; }
+    .lead-date { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+    .lead-actions { display: flex; flex-direction: column; gap: 8px; min-width: 152px; }
 
-    /* MEASUREMENT ORDER CARDS */
-    .order-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+    /* ORDER CARDS */
+    .order-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; transition: background 0.15s; }
+    .order-card:hover { background: var(--card-hover); }
     .order-card.status-complete { border-left: 3px solid var(--green); }
     .order-card.status-processing { border-left: 3px solid var(--yellow); }
-    .order-card.status-pending { border-left: 3px solid #ccc; }
-    .order-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
-    .order-name { font-size: 15px; font-weight: 700; color: var(--navy); }
-    .order-address { font-size: 13px; color: var(--text); font-weight: 500; margin: 3px 0; }
-    .order-meta { font-size: 12px; color: #bbb; margin-top: 3px; }
-    .order-actions { display: flex; flex-direction: column; gap: 7px; min-width: 148px; }
-    .processing-msg { font-size: 12px; color: var(--yellow); font-weight: 600; text-align: center; padding: 8px; background: #fff8e1; border-radius: 6px; line-height: 1.5; }
+    .order-card.status-pending { border-left: 3px solid rgba(255,255,255,0.15); }
+    .order-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .order-name { font-size: 15px; font-weight: 700; color: var(--white); }
+    .order-address { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 500; margin: 4px 0; }
+    .order-meta { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+    .order-actions { display: flex; flex-direction: column; gap: 8px; min-width: 152px; }
+    .processing-msg { font-size: 12px; color: var(--yellow); font-weight: 600; text-align: center; padding: 9px 12px; background: var(--yellow-dim); border: 1px solid rgba(251,191,36,0.2); border-radius: 8px; line-height: 1.5; }
 
     /* MEASUREMENT TILES */
-    .measure-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-    .measure-tile { background: var(--cream); border-radius: 7px; padding: 10px 12px; }
-    .measure-tile-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); margin-bottom: 3px; }
-    .measure-tile-val { font-size: 17px; font-weight: 800; color: var(--navy); font-family: var(--serif); }
-    .measure-tile-unit { font-size: 10px; color: var(--mid); font-weight: 500; }
+    .measure-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+    .measure-tile { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; }
+    .measure-tile-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray2); margin-bottom: 4px; }
+    .measure-tile-val { font-size: 18px; font-weight: 800; color: var(--white); font-family: var(--serif); }
+    .measure-tile-unit { font-size: 10px; color: var(--gray2); font-weight: 500; }
 
     /* REVIEW CARDS */
-    .review-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 12px; display: flex; gap: 16px; align-items: flex-start; transition: opacity 0.3s; }
-    .review-avatar { flex-shrink: 0; width: 44px; height: 44px; border-radius: 8px; background: var(--cream); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #bbb; }
+    .review-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 10px; display: flex; gap: 16px; align-items: flex-start; transition: opacity 0.3s, background 0.15s; }
+    .review-card:hover { background: var(--card-hover); }
+    .review-avatar { flex-shrink: 0; width: 44px; height: 44px; border-radius: 10px; background: rgba(255,255,255,0.07); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .review-body { flex: 1; min-width: 0; }
-    .review-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
-    .review-name { font-size: 15px; font-weight: 700; color: var(--navy); }
-    .review-stars { color: #f5a623; font-size: 15px; letter-spacing: 1px; }
-    .review-text { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 6px; }
-    .review-footer { font-size: 12px; color: #aaa; }
-    .review-actions { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+    .review-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .review-name { font-size: 15px; font-weight: 700; color: var(--white); }
+    .review-stars { color: var(--yellow); font-size: 14px; letter-spacing: 1px; }
+    .review-text { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 6px; }
+    .review-footer { font-size: 12px; color: rgba(255,255,255,0.25); }
+    .review-actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
 
     /* BUTTONS */
-    .btn-primary { background: var(--navy); color: white; border: none; border-radius: 7px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; transition: background 0.15s; display: block; width: 100%; }
-    .btn-primary:hover { background: var(--navy-dark); }
-    .btn-green { background: var(--green); color: white; border: none; border-radius: 7px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; text-decoration: none; display: block; }
-    .btn-green:hover { opacity: 0.88; }
-    .btn-ghost { background: white; color: var(--mid); border: 1px solid var(--border); border-radius: 7px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; display: block; width: 100%; }
-    .btn-ghost:hover { background: var(--cream); }
-    .btn-ordered { background: #e8f5e9; color: var(--green); border: 1px solid #c8e6c9; border-radius: 7px; padding: 9px 16px; font-size: 13px; font-weight: 700; text-align: center; display: block; }
-    .btn-approve { background: var(--green); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); white-space: nowrap; }
-    .btn-approve:hover { opacity: 0.88; }
-    .btn-reject { background: #fff0f0; color: var(--red); border: 1px solid #fdd; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); white-space: nowrap; }
-    .btn-reject:hover { background: #ffe0e0; }
-    .btn-approve:disabled, .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), #2563eb); color: white; border: none; border-radius: 9px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; transition: opacity 0.15s; display: block; width: 100%; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(52,211,153,0.25); border-radius: 9px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; text-decoration: none; display: block; transition: background 0.15s; }
+    .btn-green:hover { background: rgba(52,211,153,0.22); }
+    .btn-ghost { background: rgba(255,255,255,0.05); color: var(--gray); border: 1px solid var(--border2); border-radius: 9px; padding: 9px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); text-align: center; white-space: nowrap; display: block; width: 100%; transition: background 0.15s; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.09); color: var(--white); }
+    .btn-ordered { background: var(--green-dim); color: var(--green); border: 1px solid rgba(52,211,153,0.2); border-radius: 9px; padding: 10px 16px; font-size: 13px; font-weight: 700; text-align: center; display: block; }
+    .btn-approve { background: var(--green-dim); color: var(--green); border: 1px solid rgba(52,211,153,0.25); border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--sans); white-space: nowrap; transition: background 0.15s; }
+    .btn-approve:hover { background: rgba(52,211,153,0.22); }
+    .btn-reject { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,0.2); border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--sans); white-space: nowrap; transition: background 0.15s; }
+    .btn-reject:hover { background: rgba(248,113,113,0.2); }
+    .btn-approve:disabled, .btn-reject:disabled { opacity: 0.35; cursor: not-allowed; }
 
     /* MODAL */
-    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(6px); }
     .modal-backdrop.open { display: flex; }
-    .modal { background: white; border-radius: 14px; padding: 30px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-    .modal h2 { font-family: var(--serif); font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 5px; }
-    .modal p { font-size: 13px; color: var(--mid); margin-bottom: 18px; line-height: 1.6; }
-    .modal-field { margin-bottom: 12px; }
-    .modal-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mid); margin-bottom: 5px; }
-    .modal-field input, .modal-field select { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 14px; outline: none; font-family: var(--sans); background: var(--cream); }
-    .modal-field input:focus, .modal-field select:focus { border-color: var(--navy); background: white; }
-    .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-    .modal-btn-primary { flex: 1; background: var(--blue); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
-    .modal-btn-primary:hover { background: #1638b0; }
-    .modal-btn-primary:disabled { background: #aaa; cursor: not-allowed; }
-    .modal-btn-cancel { background: white; color: var(--mid); border: 1px solid var(--border); border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
-    .modal-btn-cancel:hover { background: var(--cream); }
+    .modal { background: #131e38; border: 1.5px solid var(--border2); border-radius: 18px; padding: 32px; width: 100%; max-width: 460px; box-shadow: 0 40px 80px rgba(0,0,0,0.5); animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+    .modal h2 { font-family: var(--serif); font-size: 20px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+    .modal p { font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+    .modal-field { margin-bottom: 14px; }
+    .modal-field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gray2); margin-bottom: 6px; }
+    .modal-field input, .modal-field select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border2); border-radius: 10px; font-size: 14px; outline: none; font-family: var(--sans); background: rgba(255,255,255,0.05); color: var(--white); }
+    .modal-field input::placeholder { color: rgba(255,255,255,0.2); }
+    .modal-field select option { background: #131e38; }
+    .modal-field input:focus, .modal-field select:focus { border-color: var(--blue-light); background: rgba(255,255,255,0.08); }
+    .modal-btns { display: flex; gap: 10px; margin-top: 22px; }
+    .modal-btn-primary { flex: 1; background: linear-gradient(135deg, var(--blue), #2563eb); color: white; border: none; border-radius: 10px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--sans); transition: opacity 0.15s; }
+    .modal-btn-primary:hover { opacity: 0.88; }
+    .modal-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .modal-btn-cancel { background: rgba(255,255,255,0.06); color: var(--gray); border: 1px solid var(--border2); border-radius: 10px; padding: 13px 20px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: background 0.15s; }
+    .modal-btn-cancel:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
+    /* PIPELINE */
+    .pipeline-wrap { overflow-x: auto; padding-bottom: 12px; }
+    .pipeline-board { display: flex; gap: 12px; min-width: 900px; }
+    .pipeline-col { flex: 1; min-width: 160px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .pipeline-col-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .pipeline-col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    .pipeline-col-count { font-size: 11px; font-weight: 600; color: var(--gray2); background: rgba(255,255,255,0.06); padding: 1px 7px; border-radius: 10px; }
+    .job-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 12px 13px; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .job-card:hover { background: rgba(255,255,255,0.09); border-color: var(--border2); }
+    .job-card-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+    .job-card-addr { font-size: 11px; color: var(--gray); line-height: 1.4; margin-bottom: 6px; }
+    .job-card-meta { display: flex; align-items: center; justify-content: space-between; }
+    .job-card-val { font-size: 12px; font-weight: 700; color: var(--green); }
+    .job-card-date { font-size: 10px; color: var(--gray2); }
+    .pipeline-add-btn { width: 100%; padding: 9px; background: transparent; border: 1px dashed var(--border2); border-radius: 10px; color: var(--gray2); font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: all 0.15s; margin-top: 2px; }
+    .pipeline-add-btn:hover { border-color: var(--blue-light); color: var(--blue-light); background: rgba(91,164,245,0.05); }
+    .stage-lead { color: var(--gray); }
+    .stage-estimate { color: var(--yellow); }
+    .stage-signed { color: var(--blue-light); }
+    .stage-production { color: #a78bfa; }
+    .stage-collected { color: var(--green); }
+    .jtab { background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.4);font-size:12px;font-weight:600;padding:12px 16px;cursor:pointer;font-family:var(--sans);transition:all 0.15s; }
+    .jtab.active { color:var(--blue-light);border-bottom-color:var(--blue-light); }
+    .jtab:hover { color:rgba(255,255,255,0.8); }
+    .activity-note { background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px; }
+    .activity-note-text { font-size:13px;color:var(--white);line-height:1.5;margin-bottom:4px; }
+    .activity-note-meta { font-size:10px;color:var(--gray2); }
 
     @media (max-width: 620px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -141,11 +203,13 @@
       .lead-actions .btn-primary, .lead-actions .btn-ghost, .order-actions .btn-primary, .order-actions .btn-ghost { width: auto; flex: 1; }
       .review-card { flex-direction: column; }
       .review-actions { flex-direction: row; }
-      .admin-header { padding: 0 12px; }
+      .admin-header { padding: 0 14px; }
       .admin-main { padding: 16px 12px; }
       .measure-grid { grid-template-columns: repeat(2, 1fr); }
       .header-right { gap: 4px; }
-      .tab-btn { padding: 5px 10px; font-size: 11px; }
+      .tab-btn { padding: 8px 12px; }
+      .tab-btn .tab-label { font-size: 12px; }
+      .tab-btn .tab-sub { font-size: 9px; }
     }
   </style>
 </head>
@@ -167,21 +231,40 @@
   <div class="admin-header">
     <h1>Titan Admin</h1>
     <div class="header-right">
-      <button class="tab-btn" id="tabLeads" onclick="switchTab('leads')">Leads</button>
-      <button class="tab-btn" id="tabMeasurements" onclick="switchTab('measurements')">Measurements</button>
-      <button class="tab-btn" id="tabReviews" onclick="switchTab('reviews')">Reviews</button>
-      <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')">Approved</button>
+      <button class="tab-btn" id="tabFeed" onclick="switchTab('feed')"><span class="tab-label">Daily Feed</span><span class="tab-sub">Today's intelligence</span></button>
+      <button class="tab-btn" id="tabLeads" onclick="switchTab('leads')"><span class="tab-label">Leads</span><span class="tab-sub">Every quote submission</span></button>
+      <button class="tab-btn" id="tabMeasurements" onclick="switchTab('measurements')"><span class="tab-label">Measurements</span><span class="tab-sub">All property data</span></button>
+      <button class="tab-btn" id="tabPermits" onclick="switchTab('permits')"><span class="tab-label">Permits</span><span class="tab-sub">Daily scored feed</span></button>
+      <button class="tab-btn" id="tabReviews" onclick="switchTab('reviews')"><span class="tab-label">Reviews</span><span class="tab-sub">Homeowner feedback</span></button>
+      <button class="tab-btn" id="tabApproved" onclick="switchTab('approved')"><span class="tab-label">Published</span><span class="tab-sub">Live on your site</span></button>
+      <button class="tab-btn" id="tabPipeline" onclick="switchTab('pipeline')"><span class="tab-label">Pipeline</span><span class="tab-sub">Job stages</span></button>
       <button class="logout-btn" onclick="logout()">Sign out</button>
     </div>
   </div>
 
   <div class="admin-main">
+    <!-- Leads stats -->
+    <div class="stats-row" id="leadsStats" style="display:none;">
+      <div class="stat-card"><div class="stat-label">Total Leads</div><div class="stat-val" id="lsTotal">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-val" id="lsWeek" style="color:var(--green)">—</div><div class="stat-sub">Last 7 days</div></div>
+      <div class="stat-card"><div class="stat-label">With Measurements</div><div class="stat-val" id="lsMeas" style="color:var(--blue-light)">—</div><div class="stat-sub">Auto-measured</div></div>
+      <div class="stat-card"><div class="stat-label">With Estimate</div><div class="stat-val" id="lsEst">—</div><div class="stat-sub">Range provided</div></div>
+    </div>
+
+    <!-- Permits stats -->
+    <div class="stats-row" id="permitsStats" style="display:none;">
+      <div class="stat-card"><div class="stat-label">Total Permits</div><div class="stat-val" id="psTotal">—</div><div class="stat-sub">In database</div></div>
+      <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-val" id="psWeek" style="color:var(--green)">—</div><div class="stat-sub">Roofing + siding</div></div>
+      <div class="stat-card"><div class="stat-label">High Score</div><div class="stat-val" id="psHigh" style="color:var(--blue-light)">—</div><div class="stat-sub">Score 80+</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Job Value</div><div class="stat-val" id="psVal">—</div><div class="stat-sub">Estimated</div></div>
+    </div>
+
     <!-- Measurements stats (only shown on measurements tab) -->
     <div class="stats-row" id="measStats" style="display:none;">
-      <div class="stat-card"><div class="stat-label">Total Reports</div><div class="stat-val" id="statTotal">—</div><div class="stat-sub">All time</div></div>
-      <div class="stat-card"><div class="stat-label">Complete</div><div class="stat-val" id="statComplete" style="color:var(--green)">—</div><div class="stat-sub">Ready to use</div></div>
-      <div class="stat-card"><div class="stat-label">Processing</div><div class="stat-val" id="statProcessing" style="color:var(--yellow)">—</div><div class="stat-sub">Est. 2–4 hrs</div></div>
-      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" id="statPending">—</div><div class="stat-sub">Not yet ordered</div></div>
+      <div class="stat-card"><div class="stat-label">Total Lookups</div><div class="stat-val" id="statTotal">—</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">Data Found</div><div class="stat-val" id="statComplete" style="color:var(--green)">—</div><div class="stat-sub">Full measurements</div></div>
+      <div class="stat-card"><div class="stat-label">Not Found</div><div class="stat-val" id="statProcessing" style="color:var(--yellow)">—</div><div class="stat-sub">Manual entry</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Confidence</div><div class="stat-val" id="statPending">—</div><div class="stat-sub">Data accuracy</div></div>
     </div>
 
     <div class="toolbar">
@@ -191,13 +274,130 @@
       </div>
       <div class="filter-tabs" id="measFilters" style="display:none;">
         <button class="filter-tab active" onclick="setMeasFilter('all',this)">All</button>
-        <button class="filter-tab" onclick="setMeasFilter('complete',this)">Complete</button>
-        <button class="filter-tab" onclick="setMeasFilter('processing',this)">Processing</button>
-        <button class="filter-tab" onclick="setMeasFilter('pending',this)">Pending</button>
+        <button class="filter-tab" onclick="setMeasFilter('found',this)">Found</button>
+        <button class="filter-tab" onclick="setMeasFilter('notfound',this)">Not Found</button>
+      </div>
+      <div class="filter-tabs" id="permitFilters" style="display:none;">
+        <button class="filter-tab active" onclick="setPermitFilter('all',this)">All</button>
+        <button class="filter-tab" onclick="setPermitFilter('roof',this)">Roofing</button>
+        <button class="filter-tab" onclick="setPermitFilter('siding',this)">Siding</button>
+        <button class="filter-tab" onclick="setPermitFilter('high',this)">Score 80+</button>
       </div>
     </div>
 
     <div id="mainContainer"></div>
+  </div>
+</div>
+
+<!-- JOB MODAL -->
+<div class="modal-backdrop" id="jobModal" style="align-items:stretch;justify-content:flex-end;padding:0;">
+  <div class="modal" style="max-width:680px;width:100%;height:100vh;border-radius:0;border-right:none;border-top:none;border-bottom:none;overflow-y:auto;display:flex;flex-direction:column;gap:0;padding:0;">
+
+    <!-- Header -->
+    <div style="padding:24px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#0d1628;z-index:10;">
+      <div>
+        <h2 id="jModalTitle" style="font-size:18px;margin-bottom:2px;">Job Details</h2>
+        <div id="jModalSub" style="font-size:12px;color:var(--gray);">New job</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="jDeleteBtn" onclick="deleteJob()" style="display:none;background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,0.25);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);">Delete</button>
+        <button class="modal-btn-cancel" onclick="closeJobModal()" style="padding:8px 14px;font-size:12px;">Cancel</button>
+        <button class="modal-btn-primary" id="jSaveBtn" onclick="saveJob()" style="padding:8px 18px;font-size:12px;border-radius:8px;">Save</button>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div style="display:flex;border-bottom:1px solid var(--border);padding:0 28px;">
+      <button class="jtab active" onclick="switchJTab('details',this)">Details</button>
+      <button class="jtab" onclick="switchJTab('insurance',this)">Insurance</button>
+      <button class="jtab" onclick="switchJTab('measurements',this)">Measurements</button>
+      <button class="jtab" onclick="switchJTab('activity',this)">Activity</button>
+    </div>
+
+    <!-- DETAILS TAB -->
+    <div id="jtab-details" class="jtab-panel" style="padding:24px 28px;display:flex;flex-direction:column;gap:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="modal-field" style="margin:0;"><label>Client Name</label><input type="text" id="jName" placeholder="John Smith"></div>
+        <div class="modal-field" style="margin:0;"><label>Stage</label>
+          <select id="jStage">
+            <option value="lead">Lead</option>
+            <option value="estimate">Estimate Sent</option>
+            <option value="signed">Signed</option>
+            <option value="production">In Production</option>
+            <option value="collected">Collected</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-field" style="margin:0;"><label>Property Address</label><input type="text" id="jAddress" placeholder="123 Main St, Cedar Rapids, IA 52401"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="modal-field" style="margin:0;"><label>Phone</label><input type="text" id="jPhone" placeholder="(319) 555-0000"></div>
+        <div class="modal-field" style="margin:0;"><label>Email</label><input type="text" id="jEmail" placeholder="client@email.com"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="modal-field" style="margin:0;"><label>Job Value ($)</label><input type="number" id="jValue" placeholder="12000"></div>
+        <div class="modal-field" style="margin:0;"><label>Source</label><input type="text" id="jSource" placeholder="Permit lead, referral…"></div>
+      </div>
+      <div class="modal-field" style="margin:0;"><label>Notes</label><textarea id="jNotes" rows="3" placeholder="Storm damage on north face, missing shingles…" style="width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:13px;outline:none;font-family:var(--sans);background:rgba(255,255,255,0.05);color:var(--white);resize:vertical;"></textarea></div>
+    </div>
+
+    <!-- INSURANCE TAB -->
+    <div id="jtab-insurance" class="jtab-panel" style="padding:24px 28px;display:none;flex-direction:column;gap:14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="modal-field" style="margin:0;"><label>Insurance Company</label><input type="text" id="jInsuranceCo" placeholder="State Farm, Allstate…"></div>
+        <div class="modal-field" style="margin:0;"><label>Claim Number</label><input type="text" id="jClaimNumber" placeholder="CLM-2026-XXXXX"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="modal-field" style="margin:0;"><label>Adjuster Name</label><input type="text" id="jAdjusterName" placeholder="Jane Smith"></div>
+        <div class="modal-field" style="margin:0;"><label>Adjuster Phone</label><input type="text" id="jAdjusterPhone" placeholder="(319) 555-0000"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="modal-field" style="margin:0;"><label>Deductible ($)</label><input type="number" id="jDeductible" placeholder="1000"></div>
+        <div class="modal-field" style="margin:0;"><label>Damage Type</label>
+          <select id="jDamageType">
+            <option value="">Select…</option>
+            <option value="hail">Hail</option>
+            <option value="wind">Wind</option>
+            <option value="storm">Storm (Hail + Wind)</option>
+            <option value="water">Water / Ice Dam</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div id="jInsuranceSummary" style="display:none;padding:14px 16px;background:rgba(91,164,245,0.07);border:1px solid rgba(91,164,245,0.2);border-radius:10px;font-size:12px;color:var(--gray);line-height:1.8;"></div>
+    </div>
+
+    <!-- MEASUREMENTS TAB -->
+    <div id="jtab-measurements" class="jtab-panel" style="padding:24px 28px;display:none;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px;">LiDAR Roof Measurements</div>
+          <div style="font-size:11px;color:var(--gray);">Auto-pulled from USGS data — no EagleView needed</div>
+        </div>
+        <button onclick="pullMeasurements()" id="jPullBtn" style="background:rgba(91,164,245,0.12);color:var(--blue-light);border:1px solid rgba(91,164,245,0.25);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.15s;">Pull Measurements</button>
+      </div>
+      <div id="jMeasResult" style="display:none;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
+          <div class="measure-tile"><div class="measure-tile-label">Roof Squares</div><div class="measure-tile-val" id="jmSquares">—</div></div>
+          <div class="measure-tile"><div class="measure-tile-label">Roof Area</div><div class="measure-tile-val" id="jmSqft">—</div><div class="measure-tile-unit">sqft</div></div>
+          <div class="measure-tile"><div class="measure-tile-label">Stories</div><div class="measure-tile-val" id="jmStories">—</div></div>
+          <div class="measure-tile"><div class="measure-tile-label">Gutter Length</div><div class="measure-tile-val" id="jmGutter">—</div><div class="measure-tile-unit">ft</div></div>
+          <div class="measure-tile"><div class="measure-tile-label">Siding Area</div><div class="measure-tile-val" id="jmSiding">—</div><div class="measure-tile-unit">sqft</div></div>
+          <div class="measure-tile"><div class="measure-tile-label">Confidence</div><div class="measure-tile-val" id="jmConf">—</div><div class="measure-tile-unit">%</div></div>
+        </div>
+        <div id="jmSource" style="font-size:11px;color:var(--gray2);"></div>
+      </div>
+      <div id="jMeasEmpty" style="padding:24px;text-align:center;color:var(--gray);font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;">Enter a property address in Details, then hit Pull Measurements.</div>
+    </div>
+
+    <!-- ACTIVITY TAB -->
+    <div id="jtab-activity" class="jtab-panel" style="padding:24px 28px;display:none;flex-direction:column;gap:14px;">
+      <div style="display:flex;gap:10px;">
+        <textarea id="jActivityInput" rows="2" placeholder="Add a note — call made, inspection scheduled, adjuster visited…" style="flex:1;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:13px;outline:none;font-family:var(--sans);background:rgba(255,255,255,0.05);color:var(--white);resize:none;"></textarea>
+        <button onclick="addActivity()" style="background:rgba(91,164,245,0.12);color:var(--blue-light);border:1px solid rgba(91,164,245,0.25);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);align-self:flex-end;white-space:nowrap;">Add Note</button>
+      </div>
+      <div id="jActivityLog" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -230,7 +430,7 @@
   const SUPABASE_URL = 'https://yfscfuyxbluidykmpjod.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_DrqBo5ukYx-8hUOtDLISbQ_aFeG_A66';
 
-  let currentTab = 'leads';
+  let currentTab = 'feed';
   let measFilter = 'all';
   let allMeasItems = [];
   let pendingOrderLeadId = null;
@@ -254,7 +454,7 @@
       sessionStorage.setItem('titan_admin', '1');
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'block';
-      switchTab('leads');
+      switchTab('feed');
     } else {
       document.getElementById('loginError').style.display = 'block';
     }
@@ -270,62 +470,185 @@
 
   function switchTab(tab) {
     currentTab = tab;
-    ['leads','measurements','reviews','approved'].forEach(t => {
-      document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+    ['feed','leads','measurements','permits','reviews','approved','pipeline'].forEach(t => {
+      const el = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+      if (el) el.classList.toggle('active', t === tab);
     });
-    const labels = { leads: 'Quote Leads', measurements: 'Measurement Reports', reviews: 'Pending Reviews', approved: 'Approved Reviews' };
+    const labels = { feed: 'Daily Intelligence Feed', leads: 'Quote Leads', measurements: 'Measurement Reports', permits: 'Permit Feed', reviews: 'Pending Reviews', approved: 'Approved Reviews', pipeline: 'Job Pipeline' };
     document.getElementById('sectionLabel').textContent = labels[tab];
+    document.getElementById('leadsStats').style.display = tab === 'leads' ? 'grid' : 'none';
     document.getElementById('measStats').style.display = tab === 'measurements' ? 'grid' : 'none';
+    document.getElementById('permitsStats').style.display = tab === 'permits' ? 'grid' : 'none';
     document.getElementById('measFilters').style.display = tab === 'measurements' ? 'flex' : 'none';
+    document.getElementById('permitFilters').style.display = tab === 'permits' ? 'flex' : 'none';
 
-    if (tab === 'leads') loadLeads();
+    if (tab === 'feed') loadFeed();
+    else if (tab === 'leads') loadLeads();
     else if (tab === 'measurements') loadMeasurements();
+    else if (tab === 'permits') loadPermits();
+    else if (tab === 'pipeline') loadPipeline();
     else loadReviews(tab === 'approved');
+  }
+
+  /* ── DAILY FEED ── */
+  async function loadFeed() {
+    const c = document.getElementById('mainContainer');
+    c.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray);">Loading intelligence feed…</div>';
+
+    try {
+      const [stormsRes, permitsRes, hoodsRes] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/storm_events?order=onset_at.desc&limit=10`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
+        fetch(`${SUPABASE_URL}/rest/v1/permits?order=score.desc,issued_date.desc&limit=20`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
+        fetch(`${SUPABASE_URL}/rest/v1/neighborhoods?order=neighborhood_score.desc&limit=10`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } })
+      ]);
+
+      const storms = await stormsRes.json();
+      const permits = await permitsRes.json();
+      const hoods = await hoodsRes.json();
+
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      let html = `<div style="margin-bottom:20px;">
+        <div style="font-size:11px;color:var(--gray);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">${today}</div>
+        <div style="font-size:13px;color:var(--gray);">Signals prioritized by urgency — storm events first, then permit activity, then neighborhood targeting.</div>
+      </div>`;
+
+      // STORM SECTION
+      const recentStorms = storms.filter(s => new Date(s.onset_at) > new Date(Date.now() - 7*86400000));
+      html += `<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+        <div style="width:3px;height:18px;background:${recentStorms.length ? '#fb7185' : 'var(--border)'};border-radius:2px;"></div>
+        <span style="font-size:12px;font-weight:700;color:${recentStorms.length ? '#fb7185' : 'var(--gray)'};letter-spacing:.05em;text-transform:uppercase;">Storm Events</span>
+        <span style="font-size:11px;color:var(--gray);">${recentStorms.length ? recentStorms.length + ' active' : 'No alerts — quiet week'}</span>
+      </div>`;
+
+      if (recentStorms.length) {
+        recentStorms.forEach(s => {
+          const hail = s.hail_size_inches ? `🌨 ${s.hail_size_inches}" hail` : '';
+          const wind = s.wind_gust_mph ? `💨 ${s.wind_gust_mph}mph` : '';
+          html += `<div class="lead-card" style="border-color:rgba(251,113,133,.25);margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div>
+                <div style="font-size:14px;font-weight:600;color:#fb7185;margin-bottom:3px;">${s.event_type || 'Storm Alert'}</div>
+                <div style="font-size:12px;color:var(--gray);margin-bottom:5px;">${s.area_desc || '—'}</div>
+                ${hail || wind ? `<div style="font-size:11px;color:var(--white);display:flex;gap:10px;">${hail}${wind}</div>` : ''}
+              </div>
+              <div style="font-size:22px;font-weight:700;color:#fb7185;">${s.score || '—'}</div>
+            </div>
+          </div>`;
+        });
+      } else {
+        html += `<div style="padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;font-size:13px;color:var(--gray);">No storm activity in the last 7 days. System monitoring every 6 hours.</div>`;
+      }
+
+      // PERMITS SECTION
+      const topPermits = permits.slice(0, 5);
+      html += `<div style="margin:20px 0 8px;display:flex;align-items:center;gap:8px;">
+        <div style="width:3px;height:18px;background:var(--blue-light);border-radius:2px;"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--blue-light);letter-spacing:.05em;text-transform:uppercase;">Top Permit Leads</span>
+        <span style="font-size:11px;color:var(--gray);">${permits.length} total in feed</span>
+      </div>`;
+
+      topPermits.forEach(p => {
+        const val = p.value ? '$' + Number(p.value).toLocaleString() : '—';
+        const date = p.issued_date ? new Date(p.issued_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+        html += `<div class="lead-card" style="margin-bottom:8px;display:grid;grid-template-columns:1fr auto;gap:12px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px;">${p.address?.split('\n')[0] || '—'}</div>
+            <div style="font-size:11px;color:var(--gray);">${p.city} · ${date} · ${p.permit_type || 'Permit'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:18px;font-weight:700;color:${p.score>=80?'var(--green)':p.score>=60?'var(--blue-light)':'var(--gray)'};">${p.score}</div>
+            <div style="font-size:11px;color:var(--gray);">${val}</div>
+          </div>
+        </div>`;
+      });
+
+      // NEIGHBORHOODS SECTION
+      html += `<div style="margin:20px 0 8px;display:flex;align-items:center;gap:8px;">
+        <div style="width:3px;height:18px;background:var(--green);border-radius:2px;"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:.05em;text-transform:uppercase;">Neighborhood Targets</span>
+        <span style="font-size:11px;color:var(--gray);">Best areas to canvas right now</span>
+      </div>`;
+
+      hoods.slice(0, 4).forEach(h => {
+        const signal = h.signal === 'storm' ? '⚡ Storm zone' : h.signal === 'permits' ? '📋 Permit spike' : '📍 Active area';
+        html += `<div class="lead-card" style="margin-bottom:8px;display:grid;grid-template-columns:1fr auto;gap:12px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px;">${h.zip_code} · ${h.city}</div>
+            <div style="font-size:11px;color:var(--gray);">${signal} · ${h.permit_count_30d} permits this month · avg $${Number(h.avg_job_value||0).toLocaleString()}</div>
+          </div>
+          <div style="font-size:18px;font-weight:700;color:var(--green);text-align:right;">${h.neighborhood_score}</div>
+        </div>`;
+      });
+
+      document.getElementById('countBadge').textContent = recentStorms.length + permits.length;
+      c.innerHTML = html;
+
+    } catch(e) {
+      c.innerHTML = `<div style="padding:40px;text-align:center;color:var(--red);">Error loading feed: ${e.message}</div>`;
+    }
   }
 
   /* ── LEADS ── */
   async function loadLeads() {
     const c = document.getElementById('mainContainer');
     c.innerHTML = '<div class="empty-state">Loading…</div>';
-    const [leadsRes, ordersRes] = await Promise.all([
+    const [leadsRes, measRes] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/leads?order=created_at.desc`, { headers: sb() }),
-      fetch(`${SUPABASE_URL}/rest/v1/measurement_orders?select=lead_id,status`, { headers: sb() })
+      fetch(`${SUPABASE_URL}/rest/v1/property_measurements?select=address_normalized,roof_area_sqft,roof_squares,estimated_stories,gutter_length,complexity,confidence,found`, { headers: sb() })
     ]);
     const leads = leadsRes.ok ? await leadsRes.json() : [];
-    const orders = ordersRes.ok ? await ordersRes.json() : [];
-    const orderedMap = {};
-    orders.forEach(o => { orderedMap[o.lead_id] = o.status; });
+    const meas = measRes.ok ? await measRes.json() : [];
+    const measByAddr = {};
+    meas.forEach(m => { if (m.address_normalized) measByAddr[m.address_normalized] = m; });
+
+    const week = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const thisWeek = leads.filter(l => new Date(l.created_at) > week).length;
+    const withMeas = leads.filter(l => l.address && measByAddr[l.address.toLowerCase().replace(/\s+/g,' ').trim()]?.found).length;
+    const withEst = leads.filter(l => l.estimate_low && l.estimate_high).length;
+    document.getElementById('lsTotal').textContent = leads.length;
+    document.getElementById('lsWeek').textContent = thisWeek;
+    document.getElementById('lsMeas').textContent = withMeas;
+    document.getElementById('lsEst').textContent = withEst;
+
     document.getElementById('countBadge').textContent = leads.length;
-    if (!leads.length) { c.innerHTML = '<div class="empty-state">No leads yet — they\'ll show up when someone uses the quote calculator.</div>'; return; }
+    if (!leads.length) { c.innerHTML = '<div class="empty-state">No leads yet — they\'ll show up when someone submits the quote calculator.</div>'; return; }
     c.innerHTML = leads.map(l => {
-      const range = (l.estimate_low && l.estimate_high) ? `$${Number(l.estimate_low).toLocaleString()} – $${Number(l.estimate_high).toLocaleString()}` : 'Custom quote';
-      const measStatus = orderedMap[l.id];
-      const measBadge = measStatus === 'complete' ? '<span class="tag tag-green">Report Ready</span>'
-        : measStatus === 'processing' ? '<span class="tag tag-yellow">Report Processing</span>'
-        : '';
-      return `<div class="lead-card">
-        <div>
-          <div class="lead-top">
-            <span class="lead-name">${esc(l.name)}</span>
-            <span class="tag">${esc(l.service)}</span>
-            <span class="lead-range">${range}</span>
-            ${measBadge}
+      const range = (l.estimate_low && l.estimate_high) ? `$${Number(l.estimate_low).toLocaleString()} – $${Number(l.estimate_high).toLocaleString()}` : null;
+      const m = l.address ? measByAddr[l.address.toLowerCase().replace(/\s+/g,' ').trim()] : null;
+      const measTiles = m?.found ? `
+        <div class="measure-grid" style="margin-top:12px;">
+          ${[
+            ['Roof Area', m.roof_area_sqft ? m.roof_area_sqft.toLocaleString() + ' sq ft' : '—'],
+            ['Squares', m.roof_squares || '—'],
+            ['Stories', m.estimated_stories || '—'],
+            ['Gutters', m.gutter_length ? m.gutter_length + ' ft' : '—'],
+            ['Complexity', m.complexity ? m.complexity.charAt(0).toUpperCase() + m.complexity.slice(1) : '—'],
+            ['Confidence', m.confidence ? m.confidence + '%' : '—']
+          ].map(([label, val]) => `<div class="measure-tile">
+            <div class="measure-tile-label">${label}</div>
+            <div class="measure-tile-val">${val}</div>
+          </div>`).join('')}
+        </div>` : '';
+      return `<div class="order-card">
+        <div style="flex:1;">
+          <div class="order-top">
+            <span class="order-name">${esc(l.name)}</span>
+            <span class="tag">${esc(l.service || 'General')}</span>
+            ${range ? `<span class="tag tag-green">${range}</span>` : ''}
+            ${m?.found ? '<span class="tag" style="color:var(--blue-light);border-color:var(--blue-light);">Auto-Measured</span>' : ''}
           </div>
-          <div class="lead-meta">
-            <a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>
-            ${l.email ? ` · <a href="mailto:${esc(l.email)}">${esc(l.email)}</a>` : ''}
+          <div class="order-meta" style="margin-top:6px;">
+            <a href="tel:${esc(l.phone)}" style="color:var(--blue-light);font-weight:600;text-decoration:none;">${esc(l.phone)}</a>
+            ${l.email ? ` · <a href="mailto:${esc(l.email)}" style="color:var(--gray);text-decoration:none;">${esc(l.email)}</a>` : ''}
           </div>
-          ${l.address ? `<div class="lead-address">📍 ${esc(l.address)}</div>` : ''}
-          ${l.note ? `<div class="lead-note">"${esc(l.note)}"</div>` : ''}
-          <div class="lead-date">Submitted ${fmt(l.created_at)}</div>
+          ${l.address ? `<div class="order-address">📍 ${esc(l.address)}</div>` : ''}
+          ${l.note ? `<div class="lead-note" style="margin-top:6px;font-size:13px;color:var(--gray);font-style:italic;">"${esc(l.note)}"</div>` : ''}
+          <div class="order-meta" style="margin-top:4px;">Submitted ${fmt(l.created_at)}</div>
+          ${measTiles}
         </div>
-        <div class="lead-actions">
-          ${measStatus === 'complete'
-            ? `<button class="btn-ordered">✓ Report Ready</button><button class="btn-ghost" onclick="switchTab('measurements')">View Report →</button>`
-            : measStatus === 'processing'
-            ? `<div class="processing-msg">⏱ Processing<br><span style="font-size:11px;font-weight:400">Check Measurements tab</span></div>`
-            : `<button class="btn-primary" onclick="openModal(${l.id},'${esc(l.address || '')}')">Agent Fetch Report →</button>`
-          }
+        <div class="order-actions">
+          <a class="btn-primary" href="tel:${esc(l.phone)}" style="text-decoration:none;text-align:center;">Call</a>
+          ${l.email ? `<a class="btn-ghost" href="mailto:${esc(l.email)}" style="text-decoration:none;text-align:center;">Email</a>` : ''}
         </div>
       </div>`;
     }).join('');
@@ -335,28 +658,17 @@
   async function loadMeasurements() {
     const c = document.getElementById('mainContainer');
     c.innerHTML = '<div class="empty-state">Loading…</div>';
-    const [leadsRes, ordersRes] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/leads?select=*&order=created_at.desc`, { headers: sb() }),
-      fetch(`${SUPABASE_URL}/rest/v1/measurement_orders?select=*&order=created_at.desc`, { headers: sb() })
-    ]);
-    const leads = leadsRes.ok ? await leadsRes.json() : [];
-    const orders = ordersRes.ok ? await ordersRes.json() : [];
-    const orderedLeadIds = new Set(orders.map(o => o.lead_id));
-    const leadsById = {};
-    leads.forEach(l => { leadsById[l.id] = l; });
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/property_measurements?select=*&order=created_at.desc`, { headers: sb() });
+    allMeasItems = res.ok ? await res.json() : [];
 
-    const pending = leads.filter(l => !orderedLeadIds.has(l.id)).map(l => ({ ...l, _status: 'pending' }));
-    const active = orders.map(o => ({ ...(leadsById[o.lead_id] || {}), ...o, _status: o.status, _orderId: o.id }));
-    allMeasItems = [...active, ...pending];
+    const found = allMeasItems.filter(i => i.found);
+    const notFound = allMeasItems.filter(i => !i.found);
+    const avgConf = found.length ? Math.round(found.reduce((s, i) => s + (i.confidence || 0), 0) / found.length) : 0;
 
-    const total = allMeasItems.length;
-    const complete = allMeasItems.filter(i => i._status === 'complete').length;
-    const processing = allMeasItems.filter(i => i._status === 'processing').length;
-    const pending2 = allMeasItems.filter(i => i._status === 'pending').length;
-    document.getElementById('statTotal').textContent = total;
-    document.getElementById('statComplete').textContent = complete;
-    document.getElementById('statProcessing').textContent = processing;
-    document.getElementById('statPending').textContent = pending2;
+    document.getElementById('statTotal').textContent = allMeasItems.length;
+    document.getElementById('statComplete').textContent = found.length;
+    document.getElementById('statProcessing').textContent = notFound.length;
+    document.getElementById('statPending').textContent = avgConf ? avgConf + '%' : '—';
 
     renderMeasurements();
   }
@@ -370,49 +682,42 @@
 
   function renderMeasurements() {
     const c = document.getElementById('mainContainer');
-    const items = measFilter === 'all' ? allMeasItems : allMeasItems.filter(i => i._status === measFilter);
+    let items = allMeasItems;
+    if (measFilter === 'found') items = allMeasItems.filter(i => i.found);
+    if (measFilter === 'notfound') items = allMeasItems.filter(i => !i.found);
     document.getElementById('countBadge').textContent = items.length;
-    if (!items.length) { c.innerHTML = `<div class="empty-state">No ${measFilter === 'all' ? '' : measFilter + ' '}reports yet.</div>`; return; }
+    if (!items.length) { c.innerHTML = `<div class="empty-state">No measurement lookups yet.</div>`; return; }
     c.innerHTML = items.map(item => {
-      const statusLabel = { complete: 'Complete', processing: 'Processing', pending: 'No Report Yet' }[item._status] || '';
-      const pillClass = { complete: 'tag-green', processing: 'tag-yellow', pending: '' }[item._status] || '';
-      const tiles = item._status === 'complete' && item.measurements ? `
+      const pillClass = item.found ? 'tag-green' : 'tag-yellow';
+      const statusLabel = item.found ? 'Data Found' : 'Not Found';
+      const tiles = item.found ? `
         <div class="measure-grid">
           ${[
-            ['Roof Area', item.measurements.roof_squares, 'sq'],
-            ['Pitch', item.measurements.pitch, ''],
-            ['Eave Length', item.measurements.eave_length, 'LF'],
-            ['Ridge / Hip', item.measurements.ridge_hip, 'LF'],
-            ['Wall Area', item.measurements.wall_area, 'sq ft'],
-            ['Waste Factor', item.measurements.waste_factor, '%']
-          ].map(([label, val, unit]) => `<div class="measure-tile">
+            ['Roof Area', item.roof_area_sqft ? item.roof_area_sqft.toLocaleString() + ' sq ft' : '—', ''],
+            ['Squares', item.roof_squares || '—', ''],
+            ['Stories', item.estimated_stories || '—', ''],
+            ['Gutter Length', item.gutter_length ? item.gutter_length + ' ft' : '—', ''],
+            ['Siding Area', item.siding_area ? item.siding_area.toLocaleString() + ' sq ft' : '—', ''],
+            ['Complexity', item.complexity ? item.complexity.charAt(0).toUpperCase() + item.complexity.slice(1) : '—', '']
+          ].map(([label, val]) => `<div class="measure-tile">
             <div class="measure-tile-label">${label}</div>
-            <div class="measure-tile-val">${val || '—'} <span class="measure-tile-unit">${unit}</span></div>
+            <div class="measure-tile-val">${val}</div>
           </div>`).join('')}
         </div>` : '';
-      const actions = item._status === 'complete'
-        ? `${item.report_url ? `<a class="btn-green" href="${esc(item.report_url)}" target="_blank">↓ Download PDF</a>` : '<div class="btn-green" style="opacity:.5;cursor:default;">PDF Processing</div>'}
-           <button class="btn-ghost" onclick="openModal(${item.id},'${esc(item.address || '')}')">Re-fetch →</button>`
-        : item._status === 'processing'
-        ? `<div class="processing-msg">⏱ In Progress<br><span style="font-size:11px;font-weight:400">Est. 2–4 hrs</span></div>
-           <button class="btn-ghost" onclick="loadMeasurements()">↻ Refresh</button>`
-        : `<button class="btn-primary" onclick="openModal(${item.id},'${esc(item.address || '')}')">Agent Fetch Report →</button>`;
-      return `<div class="order-card status-${item._status}">
+      return `<div class="order-card status-${item.found ? 'complete' : 'pending'}">
         <div>
           <div class="order-top">
-            <span class="order-name">${esc(item.name)}</span>
-            <span class="tag">${esc(item.service || 'General')}</span>
+            <span class="order-name">${esc(item.address || 'Unknown Address')}</span>
             <span class="tag ${pillClass}">${statusLabel}</span>
+            ${item.confidence ? `<span class="tag">${item.confidence}% confidence</span>` : ''}
+            ${item.gis_source ? `<span class="tag">${item.gis_source}</span>` : ''}
           </div>
-          ${item.address ? `<div class="order-address">📍 ${esc(item.address)}</div>` : ''}
           <div class="order-meta">
-            ${item.phone ? `<a href="tel:${esc(item.phone)}" style="color:var(--navy);font-weight:600;text-decoration:none;">${esc(item.phone)}</a> · ` : ''}
-            Submitted ${fmt(item.created_at)}
-            ${item.ordered_at ? ` · Ordered ${fmt(item.ordered_at)}` : ''}
+            Looked up ${fmt(item.created_at)}
+            ${item.processing_time_ms ? ` · ${(item.processing_time_ms / 1000).toFixed(1)}s` : ''}
           </div>
           ${tiles}
         </div>
-        <div class="order-actions">${actions}</div>
       </div>`;
     }).join('');
   }
@@ -448,6 +753,88 @@
       } else { alert('Failed to place order. Try again.'); }
     } catch(e) { alert('Error placing order.'); }
     btn.textContent = 'Dispatch Agent →'; btn.disabled = false;
+  }
+
+  /* ── PERMITS ── */
+  let allPermits = [], permitFilter = 'all';
+
+  function setPermitFilter(f, btn) {
+    permitFilter = f;
+    document.querySelectorAll('#permitFilters .filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderPermits();
+  }
+
+  function scoreColor(s) {
+    if (s >= 80) return 'var(--green)';
+    if (s >= 60) return 'var(--blue-light)';
+    return 'var(--gray)';
+  }
+
+  function renderPermits() {
+    const c = document.getElementById('mainContainer');
+    let filtered = allPermits;
+    if (permitFilter === 'roof') filtered = allPermits.filter(p => /roof|re-roof|shingle/i.test(p.permit_type + ' ' + (p.description||'')));
+    if (permitFilter === 'siding') filtered = allPermits.filter(p => /siding|exterior|cladding/i.test(p.permit_type + ' ' + (p.description||'')));
+    if (permitFilter === 'high') filtered = allPermits.filter(p => p.score >= 80);
+
+    document.getElementById('countBadge').textContent = filtered.length;
+
+    if (!filtered.length) {
+      c.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--gray);">No permits found.<br><span style="font-size:12px;margin-top:6px;display:block;">Run the scraper on the mini PC to pull today\'s feed.</span></div>';
+      return;
+    }
+
+    c.innerHTML = filtered.map(p => {
+      const val = p.value ? '$' + Number(p.value).toLocaleString() : '—';
+      const date = p.issued_date ? new Date(p.issued_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+      const score = p.score || 0;
+      return `<div class="lead-card" style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;">${p.address || '—'}</div>
+          <div style="font-size:12px;color:var(--gray);margin-bottom:6px;">${p.city}, ${p.state || 'IA'} · ${date}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:11px;background:rgba(29,78,216,.2);color:var(--blue-light);padding:2px 8px;border-radius:100px;font-weight:600;">${p.permit_type || 'Permit'}</span>
+            ${p.description ? `<span style="font-size:11px;color:var(--gray);">${p.description.slice(0,60)}${p.description.length>60?'…':''}</span>` : ''}
+          </div>
+          ${p.contractor ? `<div style="font-size:11px;color:var(--gray);margin-top:5px;">Contractor: ${p.contractor}</div>` : ''}
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:22px;font-weight:700;color:${scoreColor(score)};line-height:1;">${score}</div>
+          <div style="font-size:9px;color:var(--gray);margin-bottom:8px;">SCORE</div>
+          <div style="font-size:13px;font-weight:600;color:var(--white);">${val}</div>
+          <div style="font-size:10px;color:var(--gray);">job value</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadPermits() {
+    const c = document.getElementById('mainContainer');
+    c.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray);">Loading permit feed…</div>';
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/permits?order=issued_date.desc,score.desc&limit=200`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      allPermits = await res.json();
+
+      // Stats
+      const week = Date.now() - 7 * 86400000;
+      const thisWeek = allPermits.filter(p => new Date(p.issued_date) >= new Date(week));
+      const high = allPermits.filter(p => p.score >= 80);
+      const withVal = allPermits.filter(p => p.value > 0);
+      const avgVal = withVal.length ? Math.round(withVal.reduce((s,p) => s + p.value, 0) / withVal.length) : 0;
+
+      document.getElementById('psTotal').textContent = allPermits.length;
+      document.getElementById('psWeek').textContent = thisWeek.length;
+      document.getElementById('psHigh').textContent = high.length;
+      document.getElementById('psVal').textContent = avgVal ? '$' + avgVal.toLocaleString() : '—';
+
+      renderPermits();
+    } catch(e) {
+      c.innerHTML = `<div style="text-align:center;padding:40px;color:var(--red);">Error loading permits: ${e.message}</div>`;
+    }
   }
 
   /* ── REVIEWS ── */
@@ -493,10 +880,214 @@
     });
   }
 
+  /* ── PIPELINE ── */
+  const STAGES = [
+    { key: 'lead',       label: 'Lead',         cls: 'stage-lead' },
+    { key: 'estimate',   label: 'Estimate Sent', cls: 'stage-estimate' },
+    { key: 'signed',     label: 'Signed',        cls: 'stage-signed' },
+    { key: 'production', label: 'In Production', cls: 'stage-production' },
+    { key: 'collected',  label: 'Collected',     cls: 'stage-collected' },
+  ];
+
+  let allJobs = [];
+
+  async function loadPipeline() {
+    const c = document.getElementById('mainContainer');
+    c.innerHTML = '<div class="empty-state">Loading pipeline…</div>';
+    document.getElementById('countBadge').textContent = '';
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/jobs?order=created_at.desc`, { headers: sb() });
+    if (!res.ok) {
+      c.innerHTML = `<div class="empty-state" style="color:var(--red);">Could not load jobs — run the Supabase SQL first.<br><br><code style="font-size:11px;opacity:.7;">CREATE TABLE public.jobs (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, name text, address text, phone text, email text, stage text DEFAULT 'lead', value numeric, source text, notes text, created_at timestamptz DEFAULT now(), updated_at timestamptz DEFAULT now()); ALTER TABLE public.jobs ENABLE ROW LEVEL SECURITY; CREATE POLICY "svc" ON public.jobs USING (true) WITH CHECK (true);</code></div>`;
+      return;
+    }
+    allJobs = await res.json();
+    document.getElementById('countBadge').textContent = allJobs.length;
+    renderPipeline();
+  }
+
+  function renderPipeline() {
+    const c = document.getElementById('mainContainer');
+    let html = '<div class="pipeline-wrap"><div class="pipeline-board">';
+    STAGES.forEach(stage => {
+      const jobs = allJobs.filter(j => j.stage === stage.key);
+      html += `<div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title ${stage.cls}">${stage.label}</span>
+          <span class="pipeline-col-count">${jobs.length}</span>
+        </div>`;
+      jobs.forEach(j => {
+        const val = j.value ? '$' + Number(j.value).toLocaleString() : '';
+        const date = j.created_at ? new Date(j.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+        html += `<div class="job-card" onclick="openJobModal(${JSON.stringify(j).replace(/"/g,'&quot;')})">
+          <div class="job-card-name">${esc(j.name)}</div>
+          <div class="job-card-addr">${esc(j.address || '')}</div>
+          <div class="job-card-meta">
+            <span class="job-card-val">${val}</span>
+            <span class="job-card-date">${date}</span>
+          </div>
+        </div>`;
+      });
+      html += `<button class="pipeline-add-btn" onclick="openJobModal(null,'${stage.key}')">+ Add job</button>
+      </div>`;
+    });
+    html += '</div></div>';
+    c.innerHTML = html;
+  }
+
+  let editingJob = null;
+
+  function switchJTab(tab, el) {
+    document.querySelectorAll('.jtab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.jtab-panel').forEach(p => p.style.display = 'none');
+    if (el) el.classList.add('active');
+    document.getElementById('jtab-' + tab).style.display = 'flex';
+    if (tab === 'activity' && editingJob) loadActivity();
+  }
+
+  function openJobModal(job, defaultStage) {
+    editingJob = job ? (typeof job === 'string' ? JSON.parse(job) : job) : null;
+    const j = editingJob;
+    document.getElementById('jName').value          = j?.name           || '';
+    document.getElementById('jAddress').value       = j?.address        || '';
+    document.getElementById('jPhone').value         = j?.phone          || '';
+    document.getElementById('jEmail').value         = j?.email          || '';
+    document.getElementById('jValue').value         = j?.value          || '';
+    document.getElementById('jSource').value        = j?.source         || '';
+    document.getElementById('jNotes').value         = j?.notes          || '';
+    document.getElementById('jStage').value         = j?.stage          || defaultStage || 'lead';
+    document.getElementById('jInsuranceCo').value   = j?.insurance_co   || '';
+    document.getElementById('jClaimNumber').value   = j?.claim_number   || '';
+    document.getElementById('jAdjusterName').value  = j?.adjuster_name  || '';
+    document.getElementById('jAdjusterPhone').value = j?.adjuster_phone || '';
+    document.getElementById('jDeductible').value    = j?.deductible     || '';
+    document.getElementById('jDamageType').value    = j?.damage_type    || '';
+    document.getElementById('jModalTitle').textContent = j ? j.name : 'New Job';
+    document.getElementById('jModalSub').textContent   = j ? (j.address || 'No address') : 'Fill in details below';
+    document.getElementById('jDeleteBtn').style.display = j ? 'block' : 'none';
+    // measurements
+    const hasMeas = j?.roof_squares;
+    document.getElementById('jMeasResult').style.display = hasMeas ? 'flex' : 'none';
+    document.getElementById('jMeasEmpty').style.display  = hasMeas ? 'none' : 'block';
+    if (hasMeas) renderMeasTiles(j);
+    // reset to details tab
+    document.querySelectorAll('.jtab').forEach((b,i) => b.classList.toggle('active', i===0));
+    document.querySelectorAll('.jtab-panel').forEach((p,i) => p.style.display = i===0 ? 'flex' : 'none');
+    document.getElementById('jActivityLog').innerHTML = '';
+    document.getElementById('jActivityInput').value = '';
+    document.getElementById('jobModal').classList.add('open');
+  }
+
+  function closeJobModal() { document.getElementById('jobModal').classList.remove('open'); }
+
+  async function saveJob() {
+    const payload = {
+      name:           document.getElementById('jName').value.trim(),
+      address:        document.getElementById('jAddress').value.trim(),
+      phone:          document.getElementById('jPhone').value.trim(),
+      email:          document.getElementById('jEmail').value.trim(),
+      value:          parseFloat(document.getElementById('jValue').value) || null,
+      source:         document.getElementById('jSource').value.trim(),
+      notes:          document.getElementById('jNotes').value.trim(),
+      stage:          document.getElementById('jStage').value,
+      insurance_co:   document.getElementById('jInsuranceCo').value.trim(),
+      claim_number:   document.getElementById('jClaimNumber').value.trim(),
+      adjuster_name:  document.getElementById('jAdjusterName').value.trim(),
+      adjuster_phone: document.getElementById('jAdjusterPhone').value.trim(),
+      deductible:     parseFloat(document.getElementById('jDeductible').value) || null,
+      damage_type:    document.getElementById('jDamageType').value,
+      updated_at:     new Date().toISOString(),
+    };
+    if (!payload.name) return alert('Name is required');
+    const btn = document.getElementById('jSaveBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    let res;
+    if (editingJob) {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${editingJob.id}`, { method: 'PATCH', headers: { ...sb(), 'Prefer': 'return=representation' }, body: JSON.stringify(payload) });
+    } else {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/jobs`, { method: 'POST', headers: { ...sb(), 'Prefer': 'return=representation' }, body: JSON.stringify(payload) });
+    }
+    btn.disabled = false; btn.textContent = 'Save';
+    if (res.ok) {
+      const data = await res.json();
+      editingJob = Array.isArray(data) ? data[0] : data;
+      document.getElementById('jModalTitle').textContent = editingJob.name;
+      document.getElementById('jModalSub').textContent = editingJob.address || '';
+      loadPipeline();
+    } else alert('Save failed: ' + (await res.text()));
+  }
+
+  async function deleteJob() {
+    if (!editingJob || !confirm('Delete this job?')) return;
+    await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${editingJob.id}`, { method: 'DELETE', headers: sb() });
+    closeJobModal(); loadPipeline();
+  }
+
+  function renderMeasTiles(data) {
+    document.getElementById('jmSquares').textContent = data.roof_squares || '—';
+    document.getElementById('jmSqft').textContent    = data.roof_sqft ? Number(data.roof_sqft).toLocaleString() : '—';
+    document.getElementById('jmStories').textContent = data.estimated_stories || '—';
+    document.getElementById('jmGutter').textContent  = data.gutter_length || '—';
+    document.getElementById('jmSiding').textContent  = data.siding_area ? Number(data.siding_area).toLocaleString() : '—';
+    document.getElementById('jmConf').textContent    = data.measurement_confidence || data.confidence || '—';
+    const src = document.getElementById('jmSource');
+    src.textContent = data.measurement_source ? 'Source: ' + data.measurement_source : '';
+    document.getElementById('jMeasResult').style.display = 'flex';
+    document.getElementById('jMeasEmpty').style.display  = 'none';
+  }
+
+  async function pullMeasurements() {
+    const addr = document.getElementById('jAddress').value.trim();
+    if (!addr) return alert('Enter a property address in the Details tab first.');
+    const btn = document.getElementById('jPullBtn');
+    btn.textContent = 'Pulling…'; btn.disabled = true;
+    try {
+      const res = await fetch('/api/measure', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address: addr }) });
+      const data = await res.json();
+      if (!data.roof_squares) throw new Error(data.error || 'No data found');
+      renderMeasTiles({ ...data, measurement_confidence: data.confidence, measurement_source: data.gis_source });
+      if (editingJob) {
+        await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${editingJob.id}`, {
+          method: 'PATCH', headers: sb(),
+          body: JSON.stringify({ roof_squares: data.roof_squares, roof_sqft: data.roof_area_sqft, measurement_confidence: data.confidence, measurement_source: data.gis_source, updated_at: new Date().toISOString() })
+        });
+      }
+    } catch(e) {
+      alert('Could not pull measurements: ' + e.message);
+    }
+    btn.textContent = 'Pull Measurements'; btn.disabled = false;
+  }
+
+  async function loadActivity() {
+    if (!editingJob) return;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/job_activity?job_id=eq.${editingJob.id}&order=created_at.desc`, { headers: sb() });
+    const notes = res.ok ? await res.json() : [];
+    const log = document.getElementById('jActivityLog');
+    if (!notes.length) { log.innerHTML = '<div style="text-align:center;color:var(--gray);font-size:13px;padding:20px;">No activity yet.</div>'; return; }
+    log.innerHTML = notes.map(n => `
+      <div class="activity-note">
+        <div class="activity-note-text">${esc(n.note)}</div>
+        <div class="activity-note-meta">${esc(n.author)} · ${fmt(n.created_at)}</div>
+      </div>`).join('');
+  }
+
+  async function addActivity() {
+    if (!editingJob) { alert('Save the job first before adding notes.'); return; }
+    const input = document.getElementById('jActivityInput');
+    const note = input.value.trim();
+    if (!note) return;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/job_activity`, {
+      method: 'POST', headers: { ...sb(), 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ job_id: editingJob.id, note, author: 'Landon' })
+    });
+    if (res.ok) { input.value = ''; loadActivity(); }
+    else alert('Could not save note.');
+  }
+
   if (sessionStorage.getItem('titan_admin') === '1') {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
-    switchTab('leads');
+    switchTab('feed');
   }
 </script>
 </body>

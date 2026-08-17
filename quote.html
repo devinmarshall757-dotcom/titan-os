@@ -30,6 +30,41 @@ body {
   flex-direction: column;
 }
 
+/* MEASUREMENT STEP */
+.addr-input-wrap { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+.measure-loading {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  padding: 40px 24px; text-align: center;
+}
+.measure-spinner {
+  width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--blue-light); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.measure-loading-label { color: var(--gray); font-size: 14px; font-weight: 500; }
+.measure-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 4px; }
+.measure-tile {
+  background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 16px 18px;
+}
+.measure-tile-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+.measure-tile-value { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
+.measure-tile-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+.measure-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);
+  color: #34d399; font-size: 11px; font-weight: 600; border-radius: 20px;
+  padding: 4px 10px; margin-bottom: 16px;
+}
+.measure-badge-warn {
+  background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.25); color: #fbbf24;
+}
+.measure-source { font-size: 11px; color: rgba(255,255,255,0.3); text-align: center; margin-top: 12px; margin-bottom: 4px; }
+.measure-skip { background: none; border: none; color: rgba(255,255,255,0.35); font-size: 13px; font-family: inherit; cursor: pointer; padding: 10px 0; text-align: center; width: 100%; transition: color 0.2s; }
+.measure-skip:hover { color: rgba(255,255,255,0.6); }
+.measure-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 14px 16px; color: #fca5a5; font-size: 13px; margin-bottom: 12px; }
+
 /* NAV */
 nav {
   background: rgba(13,21,38,0.97);
@@ -583,6 +618,34 @@ nav {
     </div>
   </div>
 
+  <!-- STEP A: ADDRESS / MEASUREMENTS (roofing, siding, gutters only) -->
+  <div class="step" id="stepA">
+    <div class="step-title">Instant Property Measurements</div>
+    <div class="step-subtitle">Enter your address — we'll pull your property's roof area, perimeter, and stories in seconds.</div>
+
+    <div class="addr-input-wrap" id="addrInputWrap">
+      <input class="q-input" type="text" id="addrInput" placeholder="123 Main St, Cedar Rapids, IA" autocomplete="street-address">
+      <button class="btn-primary" onclick="fetchMeasurements()">Analyze My Property →</button>
+      <button class="measure-skip" onclick="skipMeasurements()">Skip — I'll enter manually</button>
+    </div>
+
+    <div class="measure-loading" id="addrLoading" style="display:none">
+      <div class="measure-spinner"></div>
+      <div class="measure-loading-label" id="addrLoadingLabel">Geocoding address…</div>
+    </div>
+
+    <div id="addrResult" style="display:none">
+      <div id="addrBadge"></div>
+      <div id="addrError"></div>
+      <div class="measure-tiles" id="measureTiles"></div>
+      <div class="measure-source" id="measureSource"></div>
+      <button class="btn-primary" id="addrContinueBtn" onclick="applyMeasurements()" style="display:none">Use These Measurements →</button>
+      <button class="measure-skip" onclick="skipMeasurements()">Enter manually instead</button>
+    </div>
+
+    <button class="btn-ghost" onclick="goToStep(1)" style="margin-top:8px">← Back</button>
+  </div>
+
   <!-- STEP 2: SERVICE QUESTIONS -->
   <div class="step" id="step2">
     <div class="step-title" id="step2Title">Tell us about the project</div>
@@ -695,6 +758,8 @@ nav {
 <script>
 let selectedService = null;
 let answers = {};
+let propertyMeasurement = null;
+const MEASURABLE_SERVICES = ['roofing', 'siding', 'gutters'];
 
 const serviceQuestions = {
   roofing: {
@@ -902,7 +967,109 @@ function selectService(svc, el) {
   document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   answers = {};
-  setTimeout(() => goToStep(2), 180);
+  propertyMeasurement = null;
+  if (MEASURABLE_SERVICES.includes(svc)) {
+    // Reset address step state
+    document.getElementById('addrInput').value = '';
+    document.getElementById('addrInputWrap').style.display = '';
+    document.getElementById('addrLoading').style.display = 'none';
+    document.getElementById('addrResult').style.display = 'none';
+    setTimeout(() => goToStep('A'), 180);
+  } else {
+    setTimeout(() => goToStep(2), 180);
+  }
+}
+
+async function fetchMeasurements() {
+  const addr = document.getElementById('addrInput').value.trim();
+  if (!addr) { document.getElementById('addrInput').focus(); return; }
+
+  document.getElementById('addrInputWrap').style.display = 'none';
+  document.getElementById('addrLoading').style.display = 'flex';
+  document.getElementById('addrResult').style.display = 'none';
+
+  const labels = ['Geocoding address…', 'Fetching property data…', 'Analyzing building footprint…'];
+  let li = 0;
+  const labelEl = document.getElementById('addrLoadingLabel');
+  const labelTimer = setInterval(() => { labelEl.textContent = labels[Math.min(++li, labels.length - 1)]; }, 1800);
+
+  try {
+    const res = await fetch('/api/measure', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: addr })
+    });
+    const data = await res.json();
+    clearInterval(labelTimer);
+    document.getElementById('addrLoading').style.display = 'none';
+    document.getElementById('addrResult').style.display = 'block';
+
+    if (!res.ok || data.error) throw new Error(data.error || 'Lookup failed');
+
+    propertyMeasurement = data;
+
+    const badgeEl = document.getElementById('addrBadge');
+    const errEl = document.getElementById('addrError');
+    errEl.innerHTML = '';
+
+    if (!data.found) {
+      badgeEl.innerHTML = `<span class="measure-badge measure-badge-warn">⚠ Address found — building data limited</span>`;
+      document.getElementById('measureTiles').innerHTML = '';
+      document.getElementById('measureSource').textContent = '';
+      document.getElementById('addrContinueBtn').style.display = 'none';
+      errEl.innerHTML = `<div class="measure-error">We found your address but couldn't retrieve building footprint data. You'll enter details manually — your estimate will still be accurate.</div>`;
+      return;
+    }
+
+    badgeEl.innerHTML = `<span class="measure-badge">✓ Property measurements pulled</span>`;
+
+    const tiles = [
+      { label: 'Roof Area', value: data.roof_area_sqft?.toLocaleString() + ' sq ft', sub: data.roof_squares + ' roofing squares' },
+      { label: 'Stories', value: data.estimated_stories, sub: 'Detected from property data' },
+      { label: 'Gutter Length', value: data.gutter_length?.toLocaleString() + ' ft', sub: 'Estimated perimeter' },
+      { label: 'Complexity', value: data.complexity ? (data.complexity.charAt(0).toUpperCase() + data.complexity.slice(1)) : '—', sub: 'Roof shape rating' }
+    ];
+    document.getElementById('measureTiles').innerHTML = tiles.map(t => `
+      <div class="measure-tile">
+        <div class="measure-tile-label">${t.label}</div>
+        <div class="measure-tile-value">${t.value}</div>
+        <div class="measure-tile-sub">${t.sub}</div>
+      </div>`).join('');
+
+    const srcLabel = data.gis_source === 'usgs_3dep'
+      ? `USGS 3DEP LiDAR · ${data.lidar_date || '2019 scan'}`
+      : 'US Census & OpenStreetMap property data';
+    document.getElementById('measureSource').textContent = `Sourced from ${srcLabel} · ${Math.round(data.processing_time_ms / 100) / 10}s`;
+    document.getElementById('addrContinueBtn').style.display = '';
+
+  } catch (err) {
+    clearInterval(labelTimer);
+    document.getElementById('addrLoading').style.display = 'none';
+    document.getElementById('addrResult').style.display = 'block';
+    document.getElementById('addrBadge').innerHTML = '';
+    document.getElementById('addrError').innerHTML = `<div class="measure-error">Couldn't look up that address. Double-check it or skip to enter manually.</div>`;
+    document.getElementById('measureTiles').innerHTML = '';
+    document.getElementById('addrContinueBtn').style.display = 'none';
+    document.getElementById('addrInputWrap').style.display = '';
+  }
+}
+
+function applyMeasurements() {
+  if (propertyMeasurement?.found) {
+    if (selectedService === 'roofing' || selectedService === 'siding') {
+      if (propertyMeasurement.size_bucket) answers.size = propertyMeasurement.size_bucket;
+    }
+    if (selectedService === 'gutters') {
+      if (propertyMeasurement.gutter_size_bucket) answers.size = propertyMeasurement.gutter_size_bucket;
+    }
+    if (propertyMeasurement.stories_bucket) answers.stories = propertyMeasurement.stories_bucket;
+  }
+  goToStep(2);
+}
+
+function skipMeasurements() {
+  propertyMeasurement = null;
+  goToStep(2);
 }
 
 function buildStep2() {
@@ -912,7 +1079,7 @@ function buildStep2() {
 
   let html = '';
   cfg.questions.forEach(q => {
-    html += `<div class="q-block">
+    html += `<div class="q-block" data-qid="${q.id}">
       <div class="q-label">${q.label}</div>
       <div class="option-row">
         ${q.opts.map(o => `<button class="opt-btn" onclick="selectOpt('${q.id}', '${o}', this)">${o}</button>`).join('')}
@@ -1007,6 +1174,10 @@ async function submitQuote() {
   }
 
   const email = document.getElementById('cfEmail').value.trim();
+  // Pre-fill address from measurement if contact field is empty
+  if (propertyMeasurement?.address && !document.getElementById('cfAddress').value.trim()) {
+    document.getElementById('cfAddress').value = propertyMeasurement.address;
+  }
   const address = document.getElementById('cfAddress').value.trim();
   const note = document.getElementById('cfNote').value.trim();
   const [low, high] = calcEstimate();
@@ -1035,6 +1206,17 @@ async function submitQuote() {
       })
     });
 
+    const measureLines = propertyMeasurement?.found ? [
+      `--- Property Measurements ---`,
+      `Address: ${propertyMeasurement.address}`,
+      `Roof area: ${propertyMeasurement.roof_area_sqft?.toLocaleString()} sq ft (${propertyMeasurement.roof_squares} squares)`,
+      `Stories: ${propertyMeasurement.estimated_stories}`,
+      `Gutter length: ${propertyMeasurement.gutter_length?.toLocaleString()} ft`,
+      `Siding area: ${propertyMeasurement.siding_area?.toLocaleString()} sq ft`,
+      `Complexity: ${propertyMeasurement.complexity}`,
+      `Confidence: ${propertyMeasurement.confidence}%`
+    ] : [];
+
     await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1043,10 +1225,12 @@ async function submitQuote() {
         phone,
         email,
         service: serviceNames[selectedService] || selectedService,
+        measurement: propertyMeasurement?.found ? propertyMeasurement : null,
         message: [
           address ? `Address: ${address}` : '',
           low ? `Estimate range: $${low.toLocaleString()} – $${high.toLocaleString()}` : 'Estimate: Custom quote needed',
-          note ? `Note: ${note}` : ''
+          note ? `Note: ${note}` : '',
+          ...measureLines
         ].filter(Boolean).join('\n')
       })
     });
@@ -1057,16 +1241,33 @@ async function submitQuote() {
   goToStep(5);
 }
 
-const progressSteps = { 1: 20, 2: 50, 3: 75, 4: 90, 5: 100 };
-const progressLabels = { 1: 'Step 1 of 4 — Choose service', 2: 'Step 2 of 4 — Project details', 3: 'Step 3 of 4 — Your estimate', 4: 'Step 4 of 4 — Contact info', 5: 'Complete!' };
+const progressSteps = { 1: 20, A: 38, 2: 55, 3: 75, 4: 90, 5: 100 };
+const progressLabels = { 1: 'Step 1 of 4 — Choose service', A: 'Step 2 of 4 — Property lookup', 2: 'Step 2 of 4 — Project details', 3: 'Step 3 of 4 — Your estimate', 4: 'Step 4 of 4 — Contact info', 5: 'Complete!' };
 
 function goToStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step' + n).classList.add('active');
   document.getElementById('progressFill').style.width = progressSteps[n] + '%';
   document.getElementById('progressLabel').textContent = progressLabels[n];
-  if (n === 2) buildStep2();
+  if (n === 2) { buildStep2(); applyPrefilledSelections(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function applyPrefilledSelections() {
+  if (!propertyMeasurement?.found) return;
+  // Highlight pre-filled option buttons so user sees what was auto-selected
+  setTimeout(() => {
+    document.querySelectorAll('.opt-btn').forEach(btn => {
+      const row = btn.closest('.option-row');
+      if (!row) return;
+      const block = row.closest('.q-block');
+      const id = block?.dataset?.qid;
+      if (id && answers[id] === btn.textContent) {
+        row.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      }
+    });
+  }, 50);
 }
 </script>
 </body>

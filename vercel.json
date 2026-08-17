@@ -1,8 +1,12 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-"routes": [
-    { "src": "/api/contact", "dest": "/api/contact.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "redirects": [
+    { "source": "/admin", "destination": "/admin/reviews", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/api/contact", "destination": "/api/contact.js" },
+    { "source": "/api/measure_lidar", "destination": "/api/measure_lidar.py" },
+    { "source": "/((?!admin|pitch).*)", "destination": "/index.html" }
   ]
 }

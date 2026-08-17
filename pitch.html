@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Titan OS Partner Presentation</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #07101f;
+  --surface:  #0d1a30;
+  --card:     #111f38;
+  --card2:    #162040;
+  --border:   rgba(255,255,255,0.07);
+  --border-b: rgba(96,165,250,0.2);
+  --blue:     #1d4ed8;
+  --blue2:    #2563eb;
+  --sky:      #60a5fa;
+  --green:    #10b981;
+  --amber:    #f59e0b;
+  --red:      #f43f5e;
+  --purple:   #a855f7;
+  --white:    #ffffff;
+  --gray:     #94a3b8;
+  --gray2:    #4b5e7e;
+  --glow:     rgba(29,78,216,0.3);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-weight: 300;
+  background: var(--bg);
+  color: var(--white);
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}
+
+/* ── SLIDES ── */
+.slide {
+  position: relative;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 48px;
+  overflow: hidden;
+}
+.slide + .slide { border-top: 1px solid var(--border); }
+.inner { position: relative; z-index: 2; width: 100%; max-width: 1120px; margin: 0 auto; }
+
+/* ambient glow */
+.glow-tl::after, .glow-tr::after, .glow-bl::after, .glow-br::after {
+  content: ''; position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, var(--glow) 0%, transparent 65%);
+  pointer-events: none; z-index: 1;
+}
+.glow-tl::after { top: -280px; left: -180px; }
+.glow-tr::after { top: -280px; right: -180px; }
+.glow-bl::after { bottom: -280px; left: -180px; }
+.glow-br::after { bottom: -280px; right: -180px; }
+
+/* ── NAV DOTS ── */
+.nav { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 9px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.18); cursor: pointer; transition: all .3s; }
+.dot.on { background: var(--sky); box-shadow: 0 0 8px var(--sky); transform: scale(1.8); }
+
+/* progress */
+.prog { position: fixed; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.05); z-index: 100; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--sky)); transition: width .4s cubic-bezier(.16,1,.3,1); box-shadow: 0 0 6px var(--sky); }
+.slide-n { position: fixed; bottom: 16px; right: 24px; font-size: 11px; color: var(--gray2); z-index: 100; font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+
+/* ── TYPE ── */
+.eyebrow {
+  font-size: 10px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--sky); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ''; display: block; width: 20px; height: 1.5px; background: var(--sky); flex-shrink: 0; }
+
+h1.d { font-size: clamp(50px, 7.5vw, 96px); font-weight: 300; line-height: .93; letter-spacing: -.035em; text-wrap: balance; }
+h2.d { font-size: clamp(38px, 5.5vw, 68px); font-weight: 300; line-height: .95; letter-spacing: -.025em; text-wrap: balance; }
+h3.d { font-size: clamp(26px, 3.5vw, 44px); font-weight: 300; line-height: 1.05; letter-spacing: -.015em; }
+
+.sky { color: var(--sky); }
+.green { color: var(--green); }
+.gray { color: var(--gray); }
+.amber { color: var(--amber); }
+
+/* ── REVEAL ── */
+.r { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.r.v { opacity: 1; transform: none; }
+.d1 { transition-delay: .1s; } .d2 { transition-delay: .2s; } .d3 { transition-delay: .3s; }
+.d4 { transition-delay: .4s; } .d5 { transition-delay: .5s; } .d6 { transition-delay: .6s; }
+
+/* ── LAYOUT ── */
+.split   { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.s4060   { display: grid; grid-template-columns: 2fr 3fr; gap: 56px; align-items: start; }
+.s6040   { display: grid; grid-template-columns: 3fr 2fr; gap: 56px; align-items: start; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+
+/* ── PILL ── */
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
+.p-blue { background: rgba(29,78,216,.18); color: var(--sky); border: 1px solid rgba(96,165,250,.2); }
+.p-green { background: rgba(16,185,129,.12); color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+.p-amber { background: rgba(245,158,11,.12); color: var(--amber); border: 1px solid rgba(245,158,11,.25); }
+.p-purple { background: rgba(168,85,247,.15); color: var(--purple); border: 1px solid rgba(168,85,247,.25); }
+
+/* ── CARD ── */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+.card-b { background: linear-gradient(135deg,rgba(29,78,216,.1),rgba(13,26,48,.8)); border: 1px solid var(--border-b); border-radius: 14px; padding: 20px; box-shadow: 0 0 40px rgba(29,78,216,.1); }
+
+/* pulse dot */
+.pulse { width: 7px; height: 7px; border-radius: 50%; animation: pulseAnim 2s infinite; }
+.pulse.green { background: var(--green); box-shadow: 0 0 0 0 rgba(16,185,129,.4); --pc: rgba(16,185,129,.4); }
+.pulse.blue  { background: var(--sky);   box-shadow: 0 0 0 0 rgba(96,165,250,.4);  --pc: rgba(96,165,250,.4); }
+@keyframes pulseAnim {
+  0%   { box-shadow: 0 0 0 0 var(--pc); }
+  70%  { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* typing cursor */
+.cur { display: inline-block; width: 2px; height: 13px; background: var(--sky); margin-left: 1px; animation: blink 1s step-end infinite; vertical-align: middle; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+
+/* ══════════════════════════════════════════
+   SLIDE 1 COVER
+══════════════════════════════════════════ */
+.slide-cover {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(29,78,216,.18) 0%, transparent 70%),
+              linear-gradient(180deg, #06101f 0%, #0d1a30 100%);
+  text-align: center; padding: 120px 48px;
+}
+.logo-chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 18px; border-radius: 100px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border-b);
+  margin-bottom: 56px;
+}
+.logo-mark { width: 26px; height: 26px; background: var(--blue); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+.logo-name { font-size: 12px; font-weight: 500; letter-spacing: .06em; color: var(--gray); }
+
+.stat-row { display: flex; justify-content: center; gap: 48px; margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--border); }
+.stat-n { font-size: 44px; font-weight: 600; letter-spacing: -.04em; line-height: 1; display: block; }
+.stat-l { font-size: 11px; color: var(--gray); margin-top: 6px; text-transform: uppercase; letter-spacing: .08em; }
+
+/* ══════════════════════════════════════════
+   SLIDE 2 THE PROBLEM
+══════════════════════════════════════════ */
+.problem-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 12px; border-radius: 8px; background: var(--card);
+  border: 1px solid var(--border); margin-bottom: 5px;
+}
+.problem-row:hover { border-color: rgba(244,63,94,.25); }
+.pr-name { font-size: 14px; font-weight: 500; }
+.pr-desc { font-size: 11px; color: var(--gray); margin-top: 2px; }
+.pr-price { font-size: 19px; font-weight: 600; color: #fb7185; white-space: nowrap; letter-spacing: -.02em; }
+.total-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 22px; border-radius: 12px; margin-top: 6px;
+  background: rgba(244,63,94,.07); border: 1px solid rgba(244,63,94,.2);
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 3 THE HUB (Architecture)
+══════════════════════════════════════════ */
+.hub-wrap {
+  position: relative;
+  width: 380px; height: 380px;
+  margin: 0 auto;
+}
+.hub-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 110px; height: 110px;
+  background: linear-gradient(135deg, var(--blue), var(--sky));
+  border-radius: 24px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  box-shadow: 0 0 60px rgba(29,78,216,.6), 0 0 120px rgba(29,78,216,.2);
+  z-index: 10; gap: 4px;
+  animation: breathe 3s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,100% { box-shadow: 0 0 60px rgba(29,78,216,.6),0 0 120px rgba(29,78,216,.2); }
+  50%      { box-shadow: 0 0 80px rgba(96,165,250,.7),0 0 160px rgba(96,165,250,.25); }
+}
+.hub-center-icon { font-size: 28px; }
+
+.node {
+  position: absolute;
+  width: 90px; height: 90px;
+  border-radius: 18px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 500; text-align: center; gap: 5px;
+  border: 1px solid var(--border-b);
+  background: var(--card);
+  cursor: default;
+  transition: all .3s;
+}
+.node:hover { transform: scale(1.05); border-color: var(--sky); box-shadow: 0 0 30px rgba(96,165,250,.2); }
+.node-icon { font-size: 22px; }
+
+/* position nodes in a circle */
+.n0 { top: 0;   left: 50%; transform: translateX(-50%); }
+.n1 { top: 18%; right: 0; }
+.n2 { bottom: 18%; right: 0; }
+.n3 { bottom: 0; left: 50%; transform: translateX(-50%); }
+.n4 { bottom: 18%; left: 0; }
+.n5 { top: 18%;  left: 0; }
+
+/* connector lines via SVG */
+.hub-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.connector {
+  stroke: var(--sky); stroke-width: 1.5; fill: none; stroke-dasharray: 6 4;
+  animation: dash 2s linear infinite;
+}
+@keyframes dash { to { stroke-dashoffset: -20; } }
+
+/* ══════════════════════════════════════════
+   SLIDE 4 MEASURE ENGINE
+══════════════════════════════════════════ */
+.browser {
+  background: var(--card); border: 1px solid var(--border-b); border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 60px rgba(29,78,216,.12);
+}
+.browser-bar {
+  background: #070f1e; padding: 12px 18px;
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);
+}
+.b-dot { width: 9px; height: 9px; border-radius: 50%; }
+.b-red { background: #f43f5e; } .b-yel { background: #f59e0b; } .b-grn { background: #10b981; }
+.b-url { flex: 1; text-align: center; font-size: 11px; color: var(--gray2); font-family: monospace; }
+.browser-body { padding: 24px; }
+.b-input-row { display: flex; gap: 8px; margin-bottom: 18px; }
+.b-input { flex: 1; padding: 11px 14px; background: rgba(255,255,255,.05); border: 1px solid var(--border-b); border-radius: 9px; font-size: 13px; color: var(--white); font-family: inherit; }
+.b-btn { padding: 11px 18px; background: var(--blue); border: none; border-radius: 9px; font-size: 13px; font-weight: 500; color: white; cursor: pointer; white-space: nowrap; }
+.m-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.m-tile { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 9px; padding: 12px; opacity: 0; transform: translateY(10px); transition: all .45s cubic-bezier(.16,1,.3,1); }
+.m-tile.show { opacity: 1; transform: none; }
+.m-val { font-size: 20px; font-weight: 600; color: var(--sky); letter-spacing: -.03em; }
+.m-label { font-size: 10px; color: var(--gray); margin-top: 2px; }
+.m-conf { margin-top: 14px; padding: 9px 13px; background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.2); border-radius: 7px; font-size: 12px; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+/* ══════════════════════════════════════════
+   SLIDE 5 PERMIT INTEL
+══════════════════════════════════════════ */
+.permit-box {
+  background: var(--card); border: 1px solid var(--border-b); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.5);
+}
+.perm-head { background: #070f1e; padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.perm-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 18px; border-bottom: 1px solid var(--border); gap: 14px; }
+.perm-row:last-of-type { border-bottom: none; }
+.perm-addr { font-size: 13px; font-weight: 500; }
+.perm-city { font-size: 11px; color: var(--gray); margin-top: 1px; }
+.score-wrap { display: flex; align-items: center; gap: 7px; }
+.score-track { width: 70px; height: 3px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
+.score-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--sky)); border-radius: 2px; transition: width 1.6s cubic-bezier(.16,1,.3,1); }
+.score-n { font-size: 12px; font-weight: 600; color: var(--sky); min-width: 24px; text-align: right; }
+.perm-stats { display: flex; border-top: 1px solid var(--border); }
+.ps { flex: 1; text-align: center; padding: 12px; border-right: 1px solid var(--border); }
+.ps:last-child { border-right: none; }
+.ps-n { font-size: 18px; font-weight: 600; color: var(--sky); }
+.ps-l { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+/* ══════════════════════════════════════════
+   SLIDE 6 DASHBOARD
+══════════════════════════════════════════ */
+.dash { background: var(--card); border: 1px solid var(--border-b); border-radius: 18px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 60px rgba(29,78,216,.1); }
+.dash-top { background: #070f1e; height: 46px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.dash-logo { font-size: 13px; font-weight: 600; letter-spacing: -.01em; }
+.dash-tabs { display: flex; gap: 4px; }
+.dtab { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; color: var(--gray); cursor: pointer; }
+.dtab.on { background: rgba(29,78,216,.2); color: var(--sky); }
+.dash-body { padding: 16px; }
+.dash-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 14px; }
+.kpi { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 9px; padding: 12px; }
+.kpi-n { font-size: 20px; font-weight: 600; letter-spacing: -.03em; }
+.kpi-l { font-size: 10px; color: var(--gray); margin-top: 2px; }
+.lead-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; background: rgba(255,255,255,.03); border: 1px solid var(--border); margin-bottom: 7px; }
+.lr-name { font-size: 13px; font-weight: 500; flex: 1; }
+.lr-addr { font-size: 10px; color: var(--gray); }
+.lr-svc { font-size: 11px; font-weight: 500; }
+.lr-est { font-size: 13px; font-weight: 600; color: var(--sky); white-space: nowrap; }
+.lr-btn { padding: 4px 10px; border: none; border-radius: 6px; font-size: 10px; font-weight: 500; cursor: pointer; }
+.lr-call { background: rgba(16,185,129,.15); color: var(--green); }
+.lr-view { background: rgba(29,78,216,.15); color: var(--sky); }
+
+/* ══════════════════════════════════════════
+   SLIDE 7 CRM
+══════════════════════════════════════════ */
+.kanban { display: flex; gap: 12px; }
+.kcol { flex: 1; min-width: 0; }
+.khead { padding: 7px 12px; border-radius: 7px 7px 0 0; font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 9px; }
+.col-new .khead    { background: rgba(100,116,139,.15); color: var(--gray); }
+.col-cont .khead   { background: rgba(245,158,11,.12); color: var(--amber); }
+.col-quot .khead   { background: rgba(29,78,216,.18); color: var(--sky); }
+.col-won .khead    { background: rgba(16,185,129,.12); color: var(--green); }
+.col-closed .khead { background: rgba(168,85,247,.12); color: var(--purple); }
+.kcard { background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 11px; margin-bottom: 7px; transition: all .2s; font-size: 12px; }
+.kcard:hover { transform: translateY(-2px); border-color: var(--border-b); }
+.kc-n { font-weight: 500; margin-bottom: 3px; }
+.kc-a { color: var(--gray); font-size: 10px; margin-bottom: 7px; }
+.kc-v { font-size: 13px; font-weight: 600; color: var(--sky); }
+.kc-d { font-size: 10px; color: var(--gray2); float: right; }
+.col-won .kc-v { color: var(--green); }
+.col-closed .kc-v { color: var(--purple); }
+
+/* ══════════════════════════════════════════
+   SLIDE 8 THE AGENT
+══════════════════════════════════════════ */
+.chat { background: var(--card); border: 1px solid var(--border-b); border-radius: 18px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 60px rgba(29,78,216,.12); }
+.chat-head { background: #070f1e; padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.chat-av { width: 36px; height: 36px; background: linear-gradient(135deg,var(--blue),var(--sky)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; flex-shrink: 0; }
+.chat-name { font-size: 14px; font-weight: 500; }
+.chat-status { font-size: 11px; color: var(--green); }
+.chat-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.msg { max-width: 85%; padding: 11px 14px; border-radius: 11px; font-size: 13px; line-height: 1.55; }
+.msg.u { align-self: flex-end; background: var(--blue); border-radius: 11px 11px 2px 11px; }
+.msg.a { align-self: flex-start; background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 11px 11px 11px 2px; }
+.msg-ts { font-size: 10px; color: var(--gray2); margin-top: 5px; }
+
+/* ══════════════════════════════════════════
+   SLIDE 9 ROADMAP
+══════════════════════════════════════════ */
+.road-item { display: flex; gap: 18px; align-items: flex-start; padding: 18px 22px; border-radius: 13px; border: 1px solid var(--border); background: var(--card); margin-bottom: 10px; transition: all .3s; }
+.road-item:hover { border-color: var(--border-b); box-shadow: 0 0 30px rgba(29,78,216,.08); }
+.road-icon { width: 42px; height: 42px; flex-shrink: 0; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+.ri-blue { background: rgba(29,78,216,.18); }
+.ri-green { background: rgba(16,185,129,.12); }
+.ri-amber { background: rgba(245,158,11,.12); }
+.ri-purple { background: rgba(168,85,247,.12); }
+.road-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+.road-desc { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+/* ══════════════════════════════════════════
+   SLIDE 10 CLOSE
+══════════════════════════════════════════ */
+.rev-box {
+  padding: 36px; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(29,78,216,.14), rgba(7,16,31,.9));
+  border: 1px solid var(--border-b);
+  box-shadow: 0 0 80px rgba(29,78,216,.2);
+  text-align: center;
+}
+.rev-n { font-size: 74px; font-weight: 600; letter-spacing: -.05em; color: var(--sky); line-height: 1; display: block; }
+.rev-l { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: .1em; margin-top: 8px; }
+.rev-split { display: flex; border-top: 1px solid var(--border); margin-top: 26px; padding-top: 26px; }
+.rev-item { flex: 1; text-align: center; border-right: 1px solid var(--border); }
+.rev-item:last-child { border-right: none; }
+.rev-in { font-size: 22px; font-weight: 600; letter-spacing: -.03em; }
+.rev-il { font-size: 10px; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: .06em; }
+.close-statement { font-size: clamp(20px,2.8vw,34px); font-weight: 600; letter-spacing: -.025em; line-height: 1.25; color: var(--gray); text-wrap: balance; margin-bottom: 16px; }
+.close-statement strong { color: var(--white); }
+</style>
+</head>
+<body>
+
+<!-- ── SVG SPRITE ── hidden, referenced via <use href="#icon-*"> ── -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <!-- agent: neural hub with three radiating connectors -->
+  <symbol id="icon-agent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3.5"/>
+    <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+    <path d="M5.64 5.64l2.83 2.83M15.54 15.54l2.83 2.83M5.64 18.36l2.83-2.83M15.54 8.46l2.83-2.83"/>
+    <circle cx="12" cy="12" r="7" stroke-dasharray="3 2.2" opacity=".35"/>
+  </symbol>
+
+  <!-- measure: ruler with right-angle bracket -->
+  <symbol id="icon-measure" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="14" width="20" height="4" rx="1"/>
+    <line x1="6"  y1="14" x2="6"  y2="12"/>
+    <line x1="10" y1="14" x2="10" y2="11"/>
+    <line x1="14" y1="14" x2="14" y2="12"/>
+    <line x1="18" y1="14" x2="18" y2="11"/>
+    <path d="M5 11H3V5l5-3 5 3v6h-2" opacity=".5"/>
+  </symbol>
+
+  <!-- permit: document with official stamp ring -->
+  <symbol id="icon-permit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <circle cx="12" cy="15" r="3"/>
+    <path d="M9.5 12.5l1.5 1.5 3-3" stroke-width="1.3"/>
+  </symbol>
+
+  <!-- storm: cloud with single bolt -->
+  <symbol id="icon-storm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 17.6A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 15.25"/>
+    <polyline points="13 11 11 15 13 15 11 20"/>
+  </symbol>
+
+  <!-- crm: three stacked rows with a dot status -->
+  <symbol id="icon-crm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="4" width="18" height="4" rx="1"/>
+    <rect x="3" y="10" width="18" height="4" rx="1"/>
+    <rect x="3" y="16" width="18" height="4" rx="1"/>
+    <circle cx="7"  cy="6"  r="1" fill="currentColor" stroke="none"/>
+    <circle cx="7"  cy="12" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="7"  cy="18" r="1" fill="currentColor" stroke="none"/>
+  </symbol>
+
+  <!-- lead / chat bubble with plus -->
+  <symbol id="icon-lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    <line x1="12" y1="8" x2="12" y2="14"/>
+    <line x1="9"  y1="11" x2="15" y2="11"/>
+  </symbol>
+
+  <!-- reviews: five-point star, clean outline -->
+  <symbol id="icon-review" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </symbol>
+
+  <!-- lightning bolt (managed / acts automatically) -->
+  <symbol id="icon-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </symbol>
+
+  <!-- eye (real-time transparency) -->
+  <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </symbol>
+
+  <!-- mobile / sms -->
+  <symbol id="icon-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+    <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2.5"/>
+  </symbol>
+
+  <!-- city / location pin -->
+  <symbol id="icon-city" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="7" width="9" height="15" rx="1"/>
+    <rect x="11" y="2" width="11" height="20" rx="1"/>
+    <line x1="5" y1="11" x2="5" y2="11" stroke-width="2.5"/>
+    <line x1="5" y1="15" x2="5" y2="15" stroke-width="2.5"/>
+    <line x1="14" y1="6"  x2="14" y2="6"  stroke-width="2.5"/>
+    <line x1="18" y1="6"  x2="18" y2="6"  stroke-width="2.5"/>
+    <line x1="14" y1="10" x2="14" y2="10" stroke-width="2.5"/>
+    <line x1="18" y1="10" x2="18" y2="10" stroke-width="2.5"/>
+    <line x1="14" y1="14" x2="14" y2="14" stroke-width="2.5"/>
+    <line x1="18" y1="14" x2="18" y2="14" stroke-width="2.5"/>
+  </symbol>
+
+  <!-- map / counties -->
+  <symbol id="icon-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+    <line x1="8" y1="2" x2="8" y2="18"/>
+    <line x1="16" y1="6" x2="16" y2="22"/>
+  </symbol>
+</svg>
+
+<!-- helper: renders an icon at a given size & color -->
+<style>
+.ic { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ic svg { display:block; }
+</style>
+
+<div class="nav" id="nav"></div>
+<div class="prog"><div class="prog-fill" id="pf"></div></div>
+<div class="slide-n" id="sn">01 / 10</div>
+
+<!-- ══════════════════════════════════════
+     S1 · COVER
+══════════════════════════════════════════ -->
+<div class="slide slide-cover glow-tl" data-s="1" id="s1">
+  <div class="inner" style="text-align:center;max-width:860px;">
+    <div class="logo-chip r">
+      <span class="logo-name">TITAN CONSULTING CONTRACTING</span>
+    </div>
+
+    <h1 class="d r d1" style="font-weight:300;letter-spacing:-.03em;">Every system in your business<br><span style="font-weight:600;letter-spacing:-.035em;" class="sky">talking to each other.</span></h1>
+
+    <p class="r d3" style="font-size:17px;color:var(--gray);max-width:560px;margin:22px auto 0;line-height:1.65;">
+      Six systems. One dashboard. A personalized assistant built for your business. Your entire business — leads, permits, measurements, pipeline, and intelligence — running together in real time.
+    </p>
+
+    <div class="stat-row r d4">
+      <div>
+        <span class="stat-n sky"><span class="ctr" data-t="6">0</span></span>
+        <div class="stat-l">Systems Connected</div>
+      </div>
+      <div>
+        <span class="stat-n sky"><span class="ctr" data-t="99">0</span></span>
+        <div class="stat-l">IA Counties</div>
+      </div>
+      <div>
+        <span class="stat-n sky">24/7</span>
+        <div class="stat-l">Automated Intel</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S2 · THE PROBLEM
+══════════════════════════════════════════ -->
+<div class="slide glow-br" data-s="2">
+  <div class="inner">
+    <div class="split">
+      <div>
+        <div class="eyebrow r">The Problem</div>
+        <h2 class="d r d1">Your tools<br>don't talk<br><span class="sky">to each other.</span></h2>
+        <p class="r d2" style="color:var(--gray);margin-top:20px;font-size:15px;line-height:1.65;">
+          Roofers are duct-taping 5 subscriptions together. The lead comes in on one platform. The measurement is ordered separately. The permit intel doesn't exist. Nothing is connected so leads fall through and money walks out the door.
+        </p>
+        <div class="r d3" style="margin-top:24px;padding:16px 20px;background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.2);border-radius:12px;font-size:14px;color:#fb7185;font-weight:600;">
+          The average roofing contractor misses 60%+ of permit leads because they have no automated way to find them.
+        </div>
+      </div>
+      <div>
+        <!-- 2-col grid for tools -->
+        <div class="r d1" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">AccuLynx CRM</div>
+            <div class="pr-price" style="font-size:13px;">$400<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">EagleView / RoofSnap</div>
+            <div class="pr-price" style="font-size:13px;">$150<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">Hail Trace</div>
+            <div class="pr-price" style="font-size:13px;">$400<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">Permit monitoring</div>
+            <div class="pr-price" style="font-size:13px;">$300<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">Podium</div>
+            <div class="pr-price" style="font-size:13px;">$350<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">Website + lead capture</div>
+            <div class="pr-price" style="font-size:13px;">$400<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">CompanyCam</div>
+            <div class="pr-price" style="font-size:13px;">$149<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;">
+            <div class="pr-name" style="font-size:12px;">Jobber / scheduling</div>
+            <div class="pr-price" style="font-size:13px;">$199<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+          <div class="problem-row" style="padding:7px 12px;grid-column:1/-1;">
+            <div class="pr-name" style="font-size:12px;">SalesRabbit</div>
+            <div class="pr-price" style="font-size:13px;">$120<span style="font-size:9px;color:var(--gray);font-weight:500">/mo</span></div>
+          </div>
+        </div>
+        <div class="total-row r d3">
+          <div style="font-size:13px;font-weight:500;">Monthly tools that don't talk</div>
+          <div style="font-size:22px;font-weight:600;color:#fb7185;">$2,500+<span style="font-size:12px;font-weight:500;color:var(--gray)">/mo</span></div>
+        </div>
+        <div class="r d4" style="margin-top:8px;padding:14px 18px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:12px;display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-size:13px;font-weight:500;color:var(--green);">Titan OS — all nine, fully connected</div><div style="font-size:11px;color:var(--gray);margin-top:3px;">Custom-built for your market. One personalized assistant.</div></div>
+          <div style="font-size:22px;font-weight:600;color:var(--green);white-space:nowrap;margin-left:16px;">$1,000<span style="font-size:12px;font-weight:500;color:var(--gray)">/mo</span></div>
+        </div>
+        <div class="r d5" style="margin-top:8px;padding:12px 18px;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.25);border-radius:12px;">
+          <div style="font-size:11px;color:var(--purple);font-weight:600;margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase;">Managed service — not a generic SaaS</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.6;">Custom-built for <strong style="color:var(--white);">your brand, your market, your workflow.</strong> We own it, maintain it, and keep shipping. You're not buying software — you're subscribing to a system that improves every month.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S3 · THE HUB architecture
+══════════════════════════════════════════ -->
+<div class="slide glow-tl" data-s="3" style="background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(29,78,216,.1) 0%,transparent 70%);">
+  <div class="inner">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="eyebrow r" style="justify-content:center;">The Architecture</div>
+      <h2 class="d r d1">Six systems.<br><span class="sky">One agent connects them all.</span></h2>
+      <p class="r d2" style="color:var(--gray);margin-top:16px;max-width:520px;margin-left:auto;margin-right:auto;font-size:15px;line-height:1.6;">
+        Every system feeds data into the agent. The agent sees everything and answers in plain English.
+      </p>
+    </div>
+
+    <!-- Clean horizontal architecture flow -->
+    <div class="r d3" style="display:flex;align-items:center;gap:0;justify-content:center;margin-top:8px;">
+
+      <!-- LEFT: Input systems -->
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:160px;">
+        <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#38bdf8;flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:500;">Permit Intelligence</span>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:500;">Storm Monitoring</span>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:500;">LiDAR Measurements</span>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#a78bfa;flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:500;">Lead Capture</span>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#fb7185;flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:500;">CRM Pipeline</span>
+        </div>
+        <div style="padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;display:flex;align-items:center;gap:10px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#6ee7b7;flex-shrink:0;"></div>
+          <span style="font-size:12px;font-weight:500;">Reviews</span>
+        </div>
+      </div>
+
+      <!-- CONNECTOR LINES -->
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 12px;position:relative;min-width:80px;">
+        <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(56,189,248,.4),rgba(56,189,248,.8));position:relative;">
+          <div style="position:absolute;right:-6px;top:-4px;border-left:8px solid rgba(56,189,248,.8);border-top:4px solid transparent;border-bottom:4px solid transparent;"></div>
+        </div>
+      </div>
+
+      <!-- CENTER: Titan OS -->
+      <div style="flex-shrink:0;text-align:center;padding:28px 24px;background:linear-gradient(135deg,rgba(29,78,216,.25),rgba(15,23,42,.9));border:1px solid rgba(56,189,248,.35);border-radius:16px;box-shadow:0 0 40px rgba(29,78,216,.25);">
+        <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#38bdf8;font-weight:600;margin-bottom:10px;">Your OS</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1.1;">Titan OS</div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:5px;">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;"><div style="width:4px;height:4px;border-radius:50%;background:#10b981;"></div>All data unified</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;"><div style="width:4px;height:4px;border-radius:50%;background:#10b981;"></div>One login</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;"><div style="width:4px;height:4px;border-radius:50%;background:#10b981;"></div>Real-time</div>
+        </div>
+      </div>
+
+      <!-- CONNECTOR LINES -->
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 12px;position:relative;min-width:80px;">
+        <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(56,189,248,.8),rgba(56,189,248,.4));position:relative;">
+          <div style="position:absolute;right:-6px;top:-4px;border-left:8px solid rgba(56,189,248,.4);border-top:4px solid transparent;border-bottom:4px solid transparent;"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Outputs -->
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:180px;">
+        <div style="padding:12px 16px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;">
+          <div style="font-size:11px;font-weight:600;color:#10b981;margin-bottom:2px;">Every morning</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);">Fresh permit + storm leads, scored</div>
+        </div>
+        <div style="padding:12px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+          <div style="font-size:11px;font-weight:600;color:#38bdf8;margin-bottom:2px;">Instant answers</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);">"How many leads today?" → plain English</div>
+        </div>
+        <div style="padding:12px 16px;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.2);border-radius:8px;">
+          <div style="font-size:11px;font-weight:600;color:#a78bfa;margin-bottom:2px;">Auto-drafted outreach</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);">Lead in → text drafted → you approve</div>
+        </div>
+        <div style="padding:12px 16px;background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.2);border-radius:8px;">
+          <div style="font-size:11px;font-weight:600;color:#fb7185;margin-bottom:2px;">Full pipeline view</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);">Every job, every stage, one screen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S4 · MEASUREMENT ENGINE
+══════════════════════════════════════════ -->
+<div class="slide glow-tr" data-s="4">
+  <div class="inner">
+    <div class="s6040" style="gap:44px;">
+      <div>
+        <div class="eyebrow r">System 01</div>
+        <h2 class="d r d1">Instant<br><span class="sky">Property<br>Measurements</span></h2>
+        <p class="r d2" style="color:var(--gray);margin-top:18px;font-size:15px;line-height:1.65;">
+          Any Iowa address. In seconds — roof area, squares, stories, gutter length, siding area pulled from USGS LiDAR and satellite. No drone, no ladder, no $40 report. Works statewide, right now.
+        </p>
+        <div class="g2 r d3" style="margin-top:24px;">
+          <div class="card" style="padding:14px;">
+            <div style="font-size:19px;font-weight:600;color:var(--sky);">$0</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Per measurement<br><span style="color:var(--gray2);font-size:10px;">vs $13–40 with RoofSnap</span></div>
+          </div>
+          <div class="card" style="padding:14px;">
+            <div style="font-size:19px;font-weight:600;color:var(--sky);">&lt;5s</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Response time<br><span style="color:var(--gray2);font-size:10px;">vs 24hrs for ordered reports</span></div>
+          </div>
+          <div class="card" style="padding:14px;">
+            <div style="font-size:19px;font-weight:600;color:var(--sky);">60–85%</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Confidence score<br><span style="color:var(--gray2);font-size:10px;">USGS LiDAR + satellite</span></div>
+          </div>
+          <div class="card" style="padding:14px;">
+            <div style="font-size:19px;font-weight:600;color:var(--sky);">∞</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px;">Lookups/month<br><span style="color:var(--gray2);font-size:10px;">cached, unlimited</span></div>
+          </div>
+        </div>
+        <div class="r d4" style="margin-top:18px;display:flex;align-items:center;gap:8px;">
+          <div class="pulse green"></div>
+          <span style="font-size:13px;color:var(--green);font-weight:500;">Live now · USGS LiDAR + satellite · works for any Iowa address</span>
+        </div>
+      </div>
+
+      <div class="r d2">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="b-dot b-red"></div><div class="b-dot b-yel"></div><div class="b-dot b-grn"></div>
+            <div class="b-url">titanconsultingcontracting.com/quote</div>
+          </div>
+          <div class="browser-body">
+            <div style="font-size:11px;color:var(--gray);margin-bottom:9px;">Enter your property address</div>
+            <div class="b-input-row">
+              <div class="b-input" id="typeAddr">&nbsp;<span class="cur"></span></div>
+              <button class="b-btn" onclick="doMeasure()">Measure →</button>
+            </div>
+            <div id="mResults" style="display:none;">
+              <div class="m-grid" id="mGrid">
+                <div class="m-tile"><div class="m-val">2,847</div><div class="m-label">Roof Area (sq ft)</div></div>
+                <div class="m-tile"><div class="m-val">28.5</div><div class="m-label">Roofing Squares</div></div>
+                <div class="m-tile"><div class="m-val">2</div><div class="m-label">Stories</div></div>
+                <div class="m-tile"><div class="m-val">184 ft</div><div class="m-label">Gutter Length</div></div>
+                <div class="m-tile"><div class="m-val">1,620</div><div class="m-label">Siding Area</div></div>
+                <div class="m-tile"><div class="m-val">Moderate</div><div class="m-label">Complexity</div></div>
+              </div>
+              <div class="m-conf"><div class="pulse green"></div>Confidence: 85% · Assessor + OSM · Cached</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S5 · PERMIT INTELLIGENCE
+══════════════════════════════════════════ -->
+<div class="slide glow-bl" data-s="5">
+  <div class="inner">
+    <div class="s4060" style="gap:44px;">
+      <div>
+        <div class="eyebrow r">System 02</div>
+        <h2 class="d r d1">Permit<br><span class="sky">Intelligence</span></h2>
+        <p class="r d2" style="color:var(--gray);margin-top:18px;font-size:15px;line-height:1.65;">
+          Permit volume varies by season but that's why we built three systems working together. Permits fire when people file. Storm monitoring fires after weather events. Neighborhood targeting fires when either one hits. Every day there's a new angle to work.
+        </p>
+        <div class="r d3" style="margin-top:24px;display:flex;flex-direction:column;gap:11px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(29,78,216,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue-light);"><svg width="16" height="16"><use href="#icon-city"/></svg></div>
+            <div><div style="font-size:13px;font-weight:500;">Cedar Rapids (Linn County) · Live Now</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">Daily permit feed, scored and ranked</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(29,78,216,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue-light);"><svg width="16" height="16"><use href="#icon-map"/></svg></div>
+            <div><div style="font-size:13px;font-weight:500;">Neighborhood targeting cross-county · Live within 3–5 days</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">Permit intel expanded to your target markets after payment</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#f59e0b;"><svg width="16" height="16"><use href="#icon-storm"/></svg></div>
+            <div><div style="font-size:13px;font-weight:500;">Storm monitoring · Iowa statewide · Live Now</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">NOAA alerts every 6 hours · correlated with permit spikes</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green);"><svg width="16" height="16"><use href="#icon-agent"/></svg></div>
+            <div><div style="font-size:13px;font-weight:500;">AI-scored · local server · $0/query</div><div style="font-size:11px;color:var(--gray);margin-top:1px;">Flags the highest-value leads automatically</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="r d2">
+        <div class="permit-box">
+          <div class="perm-head">
+            <div><div style="font-size:13px;font-weight:500;">Morning Permit Feed</div><div style="font-size:11px;color:var(--gray);">Today · Cedar Rapids + Iowa City + Rock Island</div></div>
+            <div class="pill p-green"><div class="pulse green"></div>Live</div>
+          </div>
+          <div class="perm-row">
+            <div><div class="perm-addr">3615 Bluebird Dr SW</div><div class="perm-city">Cedar Rapids · Roofing Permit</div></div>
+            <div class="score-wrap"><div class="score-track"><div class="score-fill" style="width:0" data-w="92"></div></div><div class="score-n">92</div></div>
+          </div>
+          <div class="perm-row">
+            <div><div class="perm-addr">9413 Lovegrass Dr SW</div><div class="perm-city">Cedar Rapids · Storm Damage</div></div>
+            <div class="score-wrap"><div class="score-track"><div class="score-fill" style="width:0" data-w="87"></div></div><div class="score-n">87</div></div>
+          </div>
+          <div class="perm-row">
+            <div><div class="perm-addr">1820 Wiley Blvd NW</div><div class="perm-city">Cedar Rapids · Roofing</div></div>
+            <div class="score-wrap"><div class="score-track"><div class="score-fill" style="width:0" data-w="74"></div></div><div class="score-n">74</div></div>
+          </div>
+          <div class="perm-row">
+            <div><div class="perm-addr">524 Rockford Rd NE</div><div class="perm-city">Iowa City · Siding Permit</div></div>
+            <div class="score-wrap"><div class="score-track"><div class="score-fill" style="width:0" data-w="61"></div></div><div class="score-n">61</div></div>
+          </div>
+          <div class="perm-stats">
+            <div class="ps"><div class="ps-n">Daily</div><div class="ps-l">Fresh Leads</div></div>
+            <div class="ps"><div class="ps-n">99</div><div class="ps-l">IA Counties</div></div>
+            <div class="ps"><div class="ps-n">8</div><div class="ps-l">Storm Counties</div></div>
+            <div class="ps"><div class="ps-n">$0</div><div class="ps-l">Per Lead</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S6 · DASHBOARD
+══════════════════════════════════════════ -->
+<div class="slide glow-tr" data-s="6">
+  <div class="inner">
+    <div class="s4060" style="gap:44px;">
+      <div>
+        <div class="eyebrow r">System 03</div>
+        <h2 class="d r d1">Real-Time<br><span class="sky">Dashboard</span></h2>
+        <p class="r d2" style="color:var(--gray);margin-top:18px;font-size:15px;line-height:1.65;">
+          Every lead, every measurement, every permit, every review one login. Watch it update in real time. No jumping between tabs.
+        </p>
+        <div class="r d3" style="margin-top:24px;display:flex;flex-direction:column;gap:9px;">
+          <div class="pill p-blue" style="display:flex;width:fit-content;">Leads Tab every quote submission</div>
+          <div class="pill p-blue" style="display:flex;width:fit-content;">Measurements Tab all property data</div>
+          <div class="pill p-blue" style="display:flex;width:fit-content;">Permits Tab daily scored feed</div>
+          <div class="pill p-blue" style="display:flex;width:fit-content;">Reviews Tab homeowner feedback</div>
+        </div>
+        <div class="r d4" style="margin-top:20px;display:flex;align-items:center;gap:8px;">
+          <div class="pulse green"></div>
+          <span style="font-size:13px;color:var(--green);font-weight:500;">Live at /admin · real-time, no refresh needed</span>
+        </div>
+      </div>
+
+      <div class="r d2">
+        <div class="dash">
+          <div class="dash-top">
+            <div class="dash-logo">Titan OS</div>
+            <div class="dash-tabs">
+              <div class="dtab on">Leads</div>
+              <div class="dtab">Permits</div>
+              <div class="dtab">Measurements</div>
+            </div>
+          </div>
+          <div class="dash-body">
+            <div class="dash-kpis">
+              <div class="kpi"><div class="kpi-n sky">24</div><div class="kpi-l">Total Leads</div></div>
+              <div class="kpi"><div class="kpi-n" style="color:var(--green)">7</div><div class="kpi-l">This Week</div></div>
+              <div class="kpi"><div class="kpi-n" style="color:var(--amber)">18</div><div class="kpi-l">Measured</div></div>
+              <div class="kpi"><div class="kpi-n" style="color:var(--purple)">$124K</div><div class="kpi-l">Pipeline</div></div>
+            </div>
+            <div class="lead-row">
+              <div style="flex:1;min-width:0;"><div class="lr-name">Marcus Whitfield</div><div class="lr-addr">3615 Bluebird Dr SW</div></div>
+              <div class="lr-svc sky">Roofing</div>
+              <div class="lr-est">$8,400–11,200</div>
+              <div style="display:flex;gap:6px;"><button class="lr-btn lr-call">Call</button><button class="lr-btn lr-view">View</button></div>
+            </div>
+            <div class="lead-row">
+              <div style="flex:1;min-width:0;"><div class="lr-name">Jennifer Okafor</div><div class="lr-addr">9413 Lovegrass Dr SW</div></div>
+              <div class="lr-svc" style="color:var(--amber)">Gutters</div>
+              <div class="lr-est">$4,200–6,800</div>
+              <div style="display:flex;gap:6px;"><button class="lr-btn lr-call">Call</button><button class="lr-btn lr-view">View</button></div>
+            </div>
+            <div class="lead-row">
+              <div style="flex:1;min-width:0;"><div class="lr-name">Troy Albanese</div><div class="lr-addr">1820 Wiley Blvd NW</div></div>
+              <div class="lr-svc" style="color:var(--green)">Full Roof</div>
+              <div class="lr-est">$12K–16,500</div>
+              <div style="display:flex;gap:6px;"><button class="lr-btn lr-call">Call</button><button class="lr-btn lr-view">View</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S7 · CRM PIPELINE
+══════════════════════════════════════════ -->
+<div class="slide glow-bl" data-s="7">
+  <div class="inner">
+    <div class="eyebrow r" style="justify-content:center;">System 04</div>
+    <h2 class="d r d1" style="text-align:center;">CRM Pipeline <span class="sky">every job, every stage.</span></h2>
+    <p class="r d2" style="text-align:center;color:var(--gray);margin:14px auto 36px;max-width:540px;font-size:15px;line-height:1.6;">
+      Replaces AccuLynx. Built directly into your dashboard — no extra subscription, no separate login. Click any job: LiDAR roof measurements auto-pull, insurance fields, adjuster info, and full activity log all in one place.
+    </p>
+    <div class="kanban r d3">
+      <div class="kcol col-new">
+        <div class="khead">New <span style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:100px;font-size:9px;margin-left:5px;">3</span></div>
+        <div class="kcard"><div class="kc-n">Sarah Bennet</div><div class="kc-a">Oak Hill Dr, CR</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$9,200</div><div class="kc-d">Today</div></div></div>
+        <div class="kcard"><div class="kc-n">Derek Moss</div><div class="kc-a">Wiley Blvd NW</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$14,800</div><div class="kc-d">Yesterday</div></div></div>
+      </div>
+      <div class="kcol col-cont">
+        <div class="khead">Contacted <span style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:100px;font-size:9px;margin-left:5px;">2</span></div>
+        <div class="kcard"><div class="kc-n">Marcus Whitfield</div><div class="kc-a">Bluebird Dr SW</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$11,200</div><div class="kc-d">2d ago</div></div></div>
+      </div>
+      <div class="kcol col-quot">
+        <div class="khead">Quoted <span style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:100px;font-size:9px;margin-left:5px;">4</span></div>
+        <div class="kcard"><div class="kc-n">Jennifer Okafor</div><div class="kc-a">Lovegrass Dr SW</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$6,800</div><div class="kc-d">3d ago</div></div></div>
+        <div class="kcard"><div class="kc-n">Troy Albanese</div><div class="kc-a">Rockford Rd NE</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$16,500</div><div class="kc-d">4d ago</div></div></div>
+      </div>
+      <div class="kcol col-won">
+        <div class="khead">Won <span style="background:rgba(16,185,129,.2);padding:1px 6px;border-radius:100px;font-size:9px;margin-left:5px;">3</span></div>
+        <div class="kcard" style="border-color:rgba(16,185,129,.18);"><div class="kc-n">Hartley Residence</div><div class="kc-a">Prairie Creek Rd</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$22,400</div><div class="kc-d">1w ago</div></div></div>
+        <div class="kcard" style="border-color:rgba(16,185,129,.18);"><div class="kc-n">Powell Property</div><div class="kc-a">Edgewood Rd NW</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$8,900</div><div class="kc-d">1w ago</div></div></div>
+      </div>
+      <div class="kcol col-closed">
+        <div class="khead">Closed <span style="background:rgba(168,85,247,.15);padding:1px 6px;border-radius:100px;font-size:9px;margin-left:5px;">8</span></div>
+        <div class="kcard"><div class="kc-n">Rivera Home</div><div class="kc-a">Lindale Dr NE</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$18,200</div><div class="kc-d">2w ago</div></div></div>
+        <div class="kcard"><div class="kc-n">Nguyen Property</div><div class="kc-a">42nd St NE</div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="kc-v">$11,600</div><div class="kc-d">3w ago</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S8 · THE AGENT
+══════════════════════════════════════════ -->
+<div class="slide glow-tr" data-s="8" style="background:radial-gradient(ellipse 50% 70% at 80% 50%,rgba(29,78,216,.1) 0%,transparent 70%);">
+  <div class="inner">
+    <div class="s6040" style="gap:44px;">
+      <div>
+        <div class="eyebrow r" style="display:flex;align-items:center;gap:10px;">The Centerpiece <span class="pill p-purple" style="font-size:10px;padding:2px 8px;">Q4 2026</span></div>
+        <h2 class="d r d1">One agent.<br><span class="sky">Sees everything.<br>Talks to you.</span></h2>
+        <p class="r d2" style="color:var(--gray);margin-top:18px;font-size:15px;line-height:1.65;">
+          Every system feeds into a personalized assistant built specifically for your business. It knows your leads, your permits, your measurements, your pipeline — and gives you answers in plain English. Can be live within days of payment — included in your retainer.
+        </p>
+        <div class="r d3" style="margin-top:28px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;gap:11px;align-items:center;">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--sky);flex-shrink:0;"></div>
+            <span style="font-size:14px;">Lead in → agent sees roof size, storm zone, drafts text</span>
+          </div>
+          <div style="display:flex;gap:11px;align-items:center;">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--sky);flex-shrink:0;"></div>
+            <span style="font-size:14px;">"How many permits today?" → instant answer</span>
+          </div>
+          <div style="display:flex;gap:11px;align-items:center;">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--sky);flex-shrink:0;"></div>
+            <span style="font-size:14px;">"What jobs still need follow-up?" → prioritized list</span>
+          </div>
+          <div style="display:flex;gap:11px;align-items:center;">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+            <span style="font-size:14px;">Runs on a dedicated server for your business — no shared infrastructure</span>
+          </div>
+          <div style="display:flex;gap:11px;align-items:center;">
+            <div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+            <span style="font-size:14px;">Responds in ~2 seconds · SMS or dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="r d2">
+        <div class="chat">
+          <div class="chat-head">
+            <div class="chat-av">T</div>
+            <div><div class="chat-name">Titan Agent</div><div class="chat-status">● Online · All systems connected</div></div>
+          </div>
+          <div class="chat-body">
+            <div class="msg u">How many permits came in today?</div>
+            <div class="msg a">47 permits today Cedar Rapids, Iowa City, Rock Island. Top lead: 3615 Bluebird Dr SW, score 92, storm zone match. 2,847 sq ft roof. Want me to draft a follow-up text?<div class="msg-ts">Titan Agent · 2 sec</div></div>
+            <div class="msg u">Yes, draft the text.</div>
+            <div class="msg a">"Hi, this is Landon from Titan Consulting. I noticed you recently filed a roofing permit at 3615 Bluebird Dr. We specialize in storm restoration in Cedar Rapids free same-day estimates. Open to a quick call?" <br><br><span style="color:var(--sky);font-size:12px;font-weight:500;">Approve to send →</span><div class="msg-ts">Titan Agent · 1 sec</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S9 · ROADMAP
+══════════════════════════════════════════ -->
+<div class="slide glow-bl" data-s="9">
+  <div class="inner">
+    <div class="eyebrow r" style="justify-content:center;">What's Built · What's Next</div>
+    <h2 class="d r d1" style="text-align:center;">Live today. <span class="sky">Growing with you.</span></h2>
+    <p class="r d2" style="text-align:center;color:var(--gray);margin:14px auto 36px;max-width:520px;font-size:15px;">Here's exactly what's running right now and what's on the roadmap — no surprises.</p>
+
+    <div class="g2 r d3">
+      <div class="road-item">
+        <div class="road-icon ri-green ic" style="color:var(--green);"><svg width="20" height="20"><use href="#icon-measure"/></svg></div>
+        <div>
+          <div class="road-title">Permit Intelligence · Cedar Rapids <span class="pill p-green">Live Now</span></div>
+          <div class="road-desc">Daily scored permit feed from Linn County. Every roofing and storm permit ranked by opportunity.</div>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-icon ri-green ic" style="color:var(--green);"><svg width="20" height="20"><use href="#icon-bolt"/></svg></div>
+        <div>
+          <div class="road-title">Storm Monitoring · Iowa Statewide <span class="pill p-green">Live Now</span></div>
+          <div class="road-desc">NOAA severe weather alerts every 6 hours. Hail, wind, tornado — scored and surfaced in your feed.</div>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-icon ri-green ic" style="color:var(--green);"><svg width="20" height="20"><use href="#icon-crm"/></svg></div>
+        <div>
+          <div class="road-title">Job Pipeline CRM <span class="pill p-green">Live Now</span></div>
+          <div class="road-desc">Lead → Estimate → Signed → Production → Collected. Built into your dashboard. No AccuLynx needed.</div>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-icon ri-green ic" style="color:var(--green);"><svg width="20" height="20"><use href="#icon-measure"/></svg></div>
+        <div>
+          <div class="road-title">LiDAR Roof Measurements <span class="pill p-green">Live Now</span></div>
+          <div class="road-desc">Free per-property measurements. Replaces $40/report EagleView fees for preliminary estimates.</div>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-icon ri-blue ic" style="color:var(--sky);"><svg width="20" height="20"><use href="#icon-mobile"/></svg></div>
+        <div>
+          <div class="road-title">Neighborhood Targeting Cross-County <span class="pill p-blue">Live within 3–5 days</span></div>
+          <div class="road-desc">Permit intel expanded to your target counties. Same daily scored feed, cross-county. Live within 3–5 days of payment.</div>
+        </div>
+      </div>
+      <div class="road-item">
+        <div class="road-icon ri-purple ic" style="color:var(--purple);"><svg width="20" height="20"><use href="#icon-agent"/></svg></div>
+        <div>
+          <div class="road-title">AI Follow-Up Agent <span class="pill p-blue">Live within 3–5 days</span></div>
+          <div class="road-desc">Lead in → agent drafts outreach text. You approve, it sends. No manual work.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     S10 · CLOSE
+══════════════════════════════════════════ -->
+<div class="slide glow-tr" data-s="10" style="background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(29,78,216,.12) 0%,transparent 70%);">
+  <div class="inner">
+    <div class="split" style="gap:56px;">
+      <div>
+        <div class="eyebrow r">The Opportunity</div>
+        <h2 class="d r d1" style="margin-bottom:28px;">New leads.<br>Every morning.<br><span class="sky">While you sleep.</span></h2>
+        <div class="r d2 close-statement">This is your entire business, running on one system, built for Titan.</div>
+        <div class="r d3 close-statement">Ready to run it?</div>
+        <div class="r d5" style="margin-top:28px;padding:18px 22px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:13px;">
+          <div style="font-size:13px;color:var(--green);font-weight:500;margin-bottom:5px;">The math is simple.</div>
+          <div style="font-size:13px;color:var(--gray);line-height:1.6;">Close one permit lead per month that you would have missed. That single job pays for the system multiple times over.</div>
+        </div>
+        <div class="r d6" style="margin-top:12px;padding:18px 22px;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.25);border-radius:13px;">
+          <div style="font-size:13px;color:var(--purple);font-weight:500;margin-bottom:5px;display:flex;align-items:center;gap:5px;"><svg width="12" height="12"><use href="#icon-bolt"/></svg> Built for Titan not for everyone.</div>
+          <div style="font-size:13px;color:var(--gray);line-height:1.6;">Permits, storm monitoring, measurements, pipeline CRM, leads, and reviews are live today at your domain. Roadmap items — expanded counties, AI agent — are scheduled and included in the same retainer. <strong style="color:var(--white);">No surprise scope. No hidden costs. Everything in writing before you sign.</strong></div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:16px;">
+        <div class="r d2" style="padding:28px 32px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);font-weight:600;margin-bottom:14px;">What's live today</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>Permit pulls — Cedar Rapids + expanding</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>Storm monitoring — all 99 Iowa counties</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>LiDAR measurements — any Iowa address</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>CRM pipeline — jobs, insurance, adjuster</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><div style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>Lead capture + reviews dashboard</div>
+          </div>
+        </div>
+
+        <div class="r d3" style="text-align:center;">
+          <div style="font-size:13px;color:var(--gray);margin-bottom:10px;">Built · tested · running</div>
+          <div style="font-size:24px;font-weight:600;letter-spacing:-.03em;">Titan Operating System</div>
+          <div style="font-size:13px;color:var(--gray);margin-top:6px;">titanconsultingcontracting.com</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="grid" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
+<script>
+// subtle grid
+(function(){
+  const c = document.getElementById('grid');
+  const ctx = c.getContext('2d');
+  let W, H, t = 0;
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const SPACING = 48;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const cols = Math.ceil(W/SPACING)+2;
+    const rows = Math.ceil(H/SPACING)+2;
+    t += 0.004;
+    for(let row=0;row<rows;row++){
+      for(let col=0;col<cols;col++){
+        const bx = col*SPACING;
+        const by = row*SPACING;
+        const wave = Math.sin(t + col*0.35 + row*0.35)*3;
+        const x = bx + wave;
+        const y = by + wave;
+        const dist = Math.hypot(x - W/2, y - H/2);
+        const alpha = Math.max(0, 0.06 - dist/Math.max(W,H)*0.04);
+        ctx.beginPath();
+        ctx.arc(x, y, 1, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(96,165,250,${alpha})`;
+        ctx.fill();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+const slides = [...document.querySelectorAll('.slide')];
+const nav = document.getElementById('nav');
+const pf = document.getElementById('pf');
+const sn = document.getElementById('sn');
+const total = slides.length;
+
+// Build dots
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.onclick = () => slides[i].scrollIntoView({behavior:'smooth'});
+  nav.appendChild(d);
+});
+
+// Reveal on scroll
+const rObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); rObs.unobserve(e.target); } });
+}, {threshold: 0.15});
+document.querySelectorAll('.r').forEach(el => rObs.observe(el));
+
+// Active slide
+let typingDone = false, countersDone = false, roiDone = false, scoreDone = false;
+const sObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const idx = slides.indexOf(e.target);
+    document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i === idx));
+    pf.style.width = ((idx+1)/total*100) + '%';
+    sn.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    if (idx === 0) runCounters();
+    if (idx === 3) runTyping();
+    if (idx === 4) runScores();
+    if (idx === 9) runROI();
+  });
+}, {threshold: 0.5});
+slides.forEach(s => sObs.observe(s));
+
+// Counter animation
+function runCounters() {
+  if (countersDone) return; countersDone = true;
+  document.querySelectorAll('.ctr').forEach(el => {
+    const t = +el.dataset.t;
+    const dur = 1600; const s = performance.now();
+    const tick = now => {
+      const p = Math.min((now-s)/dur, 1);
+      const e = 1 - Math.pow(1-p, 4);
+      el.textContent = Math.round(e*t);
+      if (p<1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// Typing animation
+function runTyping() {
+  if (typingDone) return; typingDone = true;
+  const el = document.getElementById('typeAddr');
+  const text = '3615 Bluebird Dr SW, Cedar Rapids, IA';
+  let i = 0;
+  el.innerHTML = '<span class="cur"></span>';
+  const t = setInterval(() => {
+    if (i < text.length) el.innerHTML = text.slice(0,++i) + '<span class="cur"></span>';
+    else { clearInterval(t); setTimeout(doMeasure, 500); }
+  }, 50);
+}
+function doMeasure() {
+  document.getElementById('mResults').style.display = 'block';
+  document.querySelectorAll('.m-tile').forEach((t,i) => setTimeout(() => t.classList.add('show'), i*110));
+}
+
+// Score bar animation
+function runScores() {
+  if (scoreDone) return; scoreDone = true;
+  setTimeout(() => {
+    document.querySelectorAll('.score-fill').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 400);
+}
+
+// ROI counter
+function runROI() {
+  if (roiDone) return; roiDone = true;
+  const el = document.getElementById('revN');
+  
+  const target = 14000;
+  const dur = 2000; const s = performance.now();
+  const tick = now => {
+    const p = Math.min((now-s)/dur, 1);
+    const ease = 1 - Math.pow(1-p, 4);
+    el.textContent = '$' + Math.round(ease*target).toLocaleString();
+    if (p<1) requestAnimationFrame(tick);
+    else el.textContent = '$14,000';
+  };
+  requestAnimationFrame(tick);
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  const cur = slides.findIndex(s => { const r = s.getBoundingClientRect(); return r.top <= innerHeight/2 && r.bottom >= innerHeight/2; });
+  if (['ArrowDown','PageDown'].includes(e.key)) slides[Math.min(cur+1,total-1)]?.scrollIntoView({behavior:'smooth'});
+  if (['ArrowUp','PageUp'].includes(e.key)) slides[Math.max(cur-1,0)]?.scrollIntoView({behavior:'smooth'});
+});
+</script>
+</body>
+</html>

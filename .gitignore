@@ -45,3 +45,4 @@ env/
 .idea/
 *.swp
 *.swo
+.env*
