@@ -1,0 +1,5 @@
+# Local mini-PC operations dependencies (scrapers, scoring, task poller).
+requests>=2.33,<3
+python-dotenv>=1.0,<2
+openpyxl>=3.1,<4
+pdfplumber>=0.11,<1

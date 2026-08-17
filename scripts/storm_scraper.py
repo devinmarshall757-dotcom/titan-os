@@ -4,6 +4,9 @@ Polls NOAA Weather.gov every 6 hours for severe weather events.
 Saves to Supabase `storm_events` table.
 """
 import os, json, datetime, requests
+from dotenv import load_dotenv
+
+load_dotenv("C:/titan/.env")
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://yfscfuyxbluidykmpjod.supabase.co')
 SUPABASE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')

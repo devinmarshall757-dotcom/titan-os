@@ -21,7 +21,7 @@ HEADERS = {
 SCRIPTS = {
     "permit_scraper":              r"C:\titan\venv\Scripts\python.exe C:\titan\scripts\permit_scraper.py",
     "storm_scraper":               r"C:\titan\venv\Scripts\python.exe C:\titan\scripts\storm_scraper.py",
-    "neighborhood_scorer":         r"C:\titan\venv\Scripts\python.exe C:\titan\scripts\neighborhood_scorer.py",
+    "neighborhood_scorer":         r"C:\titan\venv\Scripts\python.exe C:\titan\neighborhood_scorer.py",
     "dubuque_permit_scraper":      r"C:\titan\venv\Scripts\python.exe C:\titan\scripts\dubuque_permit_scraper.py",
     "council_bluffs_permit_scraper": r"C:\titan\venv\Scripts\python.exe C:\titan\scripts\council_bluffs_permit_scraper.py",
 }

@@ -4,6 +4,9 @@ Downloads monthly PDF permit reports from cityofdubuque.org
 Parses with pdfplumber, saves to Supabase `permits` table.
 """
 import os, re, datetime, requests, pdfplumber, io
+from dotenv import load_dotenv
+
+load_dotenv("C:/titan/.env")
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://yfscfuyxbluidykmpjod.supabase.co')
 SUPABASE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
